@@ -1,10 +1,15 @@
 doctest_inc = include_directories('../deps/doctest/doctest')
 
+test_sources = [
+    'main.cpp',
+    'lexer.cpp',
+]
+
 testexe = executable(
     'testexe',
-    'main.cpp',
+    test_sources,
     include_directories: [a_inc, doctest_inc],
-    link_with: a_lib
+    link_with: a_lib,
 )
 
 test('All tests', testexe)

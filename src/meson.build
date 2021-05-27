@@ -1,6 +1,10 @@
-a_sources = ['a.cpp']
+a_sources = [
+    'a.cpp',
+    'lexer.cpp',
+]
+
 a_lib = shared_library(
     'a',
     a_sources,
-    include_directories: a_inc
+    include_directories: a_inc,
 )

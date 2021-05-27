@@ -1,8 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "doctest.h"
-#include "a.hpp"
-#include <string>
+#include "prelude.hpp"
 
 
 TEST_CASE("Build system check")
