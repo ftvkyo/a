@@ -15,14 +15,12 @@ TEST_CASE("Lexer")
 
     SUBCASE("processing basic brackets")
     {
-        input << "() []";
+        input << "()";
         auto tokens = lexer.tokenize(&input);
 
         std::vector<Token> expected = {
             Token::bracket_left,
             Token::bracket_right,
-            Token::bracket_square_left,
-            Token::bracket_square_right,
             Token::eof,
         };
 
@@ -31,7 +29,7 @@ TEST_CASE("Lexer")
 
     SUBCASE("processing some brackets and data inbetween")
     {
-        input << "(52) \"this_is_a_string\" [identifier?]";
+        input << "(52) (identifier?)";
         auto tokens = lexer.tokenize(&input);
 
         std::vector<Token> expected = {
@@ -39,11 +37,7 @@ TEST_CASE("Lexer")
             Token::number,
             Token::bracket_right,
 
-            Token::string,
-
-            Token::bracket_square_left,
             Token::identifier,
-            Token::bracket_square_right,
 
             Token::eof,
         };

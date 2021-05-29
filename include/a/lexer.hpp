@@ -1,28 +1,32 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 
 enum class Token {
-    eof = -1,
+    eof,
 
-    bracket_left = -2,
-    bracket_right = -3,
+    bracket_left,
+    bracket_right,
 
-    bracket_square_left = -4,
-    bracket_square_right = -5,
+    identifier,
 
-    identifier = -6,
-
-    number = -7,
-    string = -8,
+    number,
 };
 
 
 class Lexer {
 public:
+
     Lexer();
 
-    std::vector<Token> tokenize(std::istream const * input);
+    std::vector<Token> tokenize(std::istream * input);
+
+private:
+
+    bool are_from_the_same_token(char a, char b);
+
+    Token get_next_token(std::istream * input);
 };
