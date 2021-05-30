@@ -10,7 +10,7 @@ TEST_CASE("Lexer")
     {
         auto tokens = lexer.tokenize(&input);
 
-        CHECK_EQ(tokens, std::vector<Token>{Token::eof});
+        CHECK_EQ(tokens, std::vector<TokenKind>{TokenKind::eof});
     }
 
     SUBCASE("processing basic brackets")
@@ -18,10 +18,10 @@ TEST_CASE("Lexer")
         input << "()";
         auto tokens = lexer.tokenize(&input);
 
-        std::vector<Token> expected = {
-            Token::bracket_left,
-            Token::bracket_right,
-            Token::eof,
+        std::vector<TokenKind> expected = {
+            TokenKind::bracket_left,
+            TokenKind::bracket_right,
+            TokenKind::eof,
         };
 
         CHECK_EQ(tokens, expected);
@@ -32,14 +32,16 @@ TEST_CASE("Lexer")
         input << "(52) (identifier?)";
         auto tokens = lexer.tokenize(&input);
 
-        std::vector<Token> expected = {
-            Token::bracket_left,
-            Token::number,
-            Token::bracket_right,
+        std::vector<TokenKind> expected = {
+            TokenKind::bracket_left,
+            TokenKind::integer,
+            TokenKind::bracket_right,
 
-            Token::identifier,
+            TokenKind::bracket_left,
+            TokenKind::identifier,
+            TokenKind::bracket_right,
 
-            Token::eof,
+            TokenKind::eof,
         };
 
         CHECK_EQ(tokens, expected);

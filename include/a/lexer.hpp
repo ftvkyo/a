@@ -3,9 +3,10 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <functional>
 
 
-enum class Token {
+enum class TokenKind {
     eof,
 
     bracket_left,
@@ -13,7 +14,28 @@ enum class Token {
 
     identifier,
 
-    number,
+    integer,
+};
+
+
+class TokenMatcher {
+public:
+
+    TokenMatcher();
+
+    TokenKind match(std::string token);
+
+private:
+    typedef std::vector<
+        std::pair<
+            std::function<bool(std::string)>,
+            TokenKind
+        >
+    > TokenMatches;
+
+    TokenMatches token_matches;
+
+    TokenKind default_token_kind;
 };
 
 
@@ -22,11 +44,17 @@ public:
 
     Lexer();
 
-    std::vector<Token> tokenize(std::istream * input);
+    std::vector<TokenKind> tokenize(std::istream * input);
 
 private:
 
-    bool are_from_the_same_token(char a, char b);
+    bool is_long_token_char(char c);
 
-    Token get_next_token(std::istream * input);
+    bool is_long_token_pair(char left, char right);
+
+    TokenKind get_next_token(std::istream * input);
+
+    std::string SPECIAL_CHARS;
+
+    TokenMatcher token_matcher;
 };
