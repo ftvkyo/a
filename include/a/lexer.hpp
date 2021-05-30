@@ -1,67 +1,10 @@
 #pragma once
 
 #include <iostream>
-#include <sstream>
 #include <vector>
-#include <functional>
+#include <memory>
 
-
-/**
- * Different kinds of tokes we have.
- */
-enum class TokenKind {
-    /**
-     * End of file.
-     * Should appear only at the end of file.
-     */
-    eof,
-
-    /// "("
-    bracket_left,
-    /// ")"
-    bracket_right,
-
-    /// A sequence of characters in range from '0' to '9' of any length.
-    integer,
-
-    /**
-     * A sequence of graphical ASCII characters of any length that does not
-     * fall into any other category.
-     */
-    identifier,
-};
-
-
-/**
- * Converts std::strings into tokens.
- */
-class TokenMatcher {
-public:
-
-    TokenMatcher();
-
-    /**
-     * Convert a string into a token.
-     *
-     * @param token String to convert into a token.
-     *
-     * @returns Result of conversion.
-     */
-    TokenKind match(std::string token);
-
-private:
-    typedef std::vector<
-        std::pair<
-            std::function<bool(std::string)>,
-            TokenKind
-        >
-    > TokenMatches;
-
-    /**
-     * List of magical predicates that determine the token kind.
-     */
-    TokenMatches token_matches;
-};
+#include "token.hpp"
 
 
 /**
@@ -79,7 +22,7 @@ public:
      *
      * @returns Result of conversion.
      */
-    std::vector<TokenKind> tokenize(std::istream * input);
+    std::vector<std::unique_ptr<Token>> tokenize(std::istream * input);
 
 private:
 
@@ -115,7 +58,7 @@ private:
      *
      * @returns The token that was extracted.
      */
-    TokenKind get_next_token(std::istream * input);
+    std::unique_ptr<Token> get_next_token(std::istream * input);
 
     /**
      * List of characters that are tokens on their own even if they could

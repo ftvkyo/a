@@ -1,44 +1,6 @@
+#include <sstream>
+
 #include "a.hpp"
-
-
-TokenMatcher::TokenMatcher() {
-    token_matches.emplace_back([](std::string s) {
-        return s == "(";
-    }, TokenKind::bracket_left);
-
-    token_matches.emplace_back([](std::string s) {
-        return s == ")";
-    }, TokenKind::bracket_right);
-
-    token_matches.emplace_back([](std::string s) {
-        for(auto it = s.begin(); it < s.end(); it++) {
-            if(not std::isdigit(*it)) {
-                return false;
-            }
-        }
-        return true;
-    }, TokenKind::integer);
-
-    token_matches.emplace_back([](std::string s) {
-        for(auto it = s.begin(); it < s.end(); it++) {
-            if(not std::isgraph(*it)) {
-                return false;
-            }
-        }
-        return true;
-    }, TokenKind::identifier);
-}
-
-
-TokenKind TokenMatcher::match(std::string token) {
-    for(auto it = token_matches.begin(); it < token_matches.end(); it++) {
-        if(it->first(token)) {
-            return it->second;
-        }
-    }
-
-    throw SyntaxError();
-}
 
 
 Lexer::Lexer() {
@@ -46,15 +8,15 @@ Lexer::Lexer() {
 }
 
 
-std::vector<TokenKind> Lexer::tokenize(std::istream * const input) {
-    std::vector<TokenKind> result;
-    TokenKind tok = get_next_token(input);
-    result.push_back(tok);
+std::vector<std::unique_ptr<Token>> Lexer::tokenize(std::istream * const input) {
+    std::vector<std::unique_ptr<Token>> result;
+    TokenKind tk;
 
-    while(tok != TokenKind::eof) {
-        tok = get_next_token(input);
-        result.push_back(tok);
-    }
+    do {
+        std::unique_ptr<Token> tok = get_next_token(input);
+        tk = tok->kind;
+        result.emplace_back(std::move(tok));
+    } while(tk != TokenKind::eof);
 
     return result;
 }
@@ -77,13 +39,13 @@ bool Lexer::is_long_token_pair(char left, char right) {
 }
 
 
-TokenKind Lexer::get_next_token(std::istream * const input) {
+std::unique_ptr<Token> Lexer::get_next_token(std::istream * const input) {
     std::stringstream out;
     char current;
 
     *input >> std::ws;
     if(input->eof()) {
-        return TokenKind::eof;
+        return TokenEof::make();
     }
 
     do {

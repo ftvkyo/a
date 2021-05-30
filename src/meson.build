@@ -1,5 +1,6 @@
 a_sources = [
     'a.cpp',
+    'token.cpp',
     'lexer.cpp',
 ]
 

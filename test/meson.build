@@ -2,6 +2,7 @@ doctest_inc = include_directories('../deps/doctest/doctest')
 
 test_sources = [
     'main.cpp',
+    'token.cpp',
     'lexer.cpp',
 ]
 
