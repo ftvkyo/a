@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <optional>
 
 
 /**
@@ -32,6 +33,12 @@ enum class TokenKind {
 };
 
 
+class Token;
+
+
+typedef std::unique_ptr<Token> UPToken;
+
+
 class Token {
 public:
     TokenKind kind;
@@ -44,7 +51,7 @@ protected:
 
 struct TokenEof : public Token {
 public:
-    static std::unique_ptr<Token> make();
+    static UPToken make();
     virtual std::string format() override;
 private:
     TokenEof();
@@ -53,7 +60,7 @@ private:
 
 struct TokenBracketLeft : public Token {
 public:
-    static std::unique_ptr<Token> make();
+    static UPToken make();
     virtual std::string format() override;
 private:
     TokenBracketLeft();
@@ -62,7 +69,7 @@ private:
 
 struct TokenBracketRight : public Token {
 public:
-    static std::unique_ptr<Token> make();
+    static UPToken make();
     virtual std::string format() override;
 private:
     TokenBracketRight();
@@ -71,7 +78,7 @@ private:
 
 struct TokenInteger : public Token {
 public:
-    static std::unique_ptr<Token> make(int i);
+    static UPToken make(int i);
     virtual std::string format() override;
     int value();
 private:
@@ -82,7 +89,7 @@ private:
 
 struct TokenIdentifier : public Token {
 public:
-    static std::unique_ptr<Token> make(std::string s);
+    static UPToken make(std::string s);
     virtual std::string format() override;
     std::string value();
 private:
@@ -106,15 +113,11 @@ public:
      *
      * @returns Result of conversion.
      */
-    std::unique_ptr<Token> match(std::string token);
+    UPToken match(std::string token);
 
 private:
-    typedef std::vector<
-        std::pair<
-            std::function<bool(std::string)>,
-            std::function<std::unique_ptr<Token>(std::string)>
-        >
-    > TokenMatches;
+
+    typedef std::vector<std::function<std::optional<UPToken>(std::string)>> TokenMatches;
 
     /**
      * List of magical predicates that determine the token kind
