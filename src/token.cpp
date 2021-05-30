@@ -88,6 +88,11 @@ std::string TokenIdentifier::value() {
 
 
 TokenMatcher::TokenMatcher() {
+    // Fill in the token_matches with lambdas that either fail with
+    // nullopt or give you the token. The order of inserting is important,
+    // as in every lambda we assume that all previous lambdas have failed
+    // and returned nullopt.
+
     token_matches.emplace_back(
         [](std::string s) -> std::optional<UPToken> {
             if(s != "(") {
@@ -136,6 +141,9 @@ TokenMatcher::TokenMatcher() {
 
 
 UPToken TokenMatcher::match(std::string token) {
+    // we don't expect any empty strings here -- whitespace should be
+    // filtered out, eof should not go here, so getting it would
+    // mean there is a bug in the calling code.
     if(token.empty()) {
         throw CompilerError();
     }
@@ -143,6 +151,8 @@ UPToken TokenMatcher::match(std::string token) {
     for(auto it = token_matches.begin(); it < token_matches.end(); it++) {
         std::optional<UPToken> res = (*it)(token);
         if(res != std::nullopt) {
+            // Early return to be sure that only one lambda actually
+            // produces a value.
             return std::move(*res);
         }
     }

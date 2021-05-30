@@ -12,6 +12,8 @@ std::vector<UPToken> Lexer::tokenize(std::istream * const input) {
     std::vector<UPToken> result;
     TokenKind tk;
 
+    // read tokens until we reach the eof
+    // eof will also get put into the result vector
     do {
         UPToken tok = get_next_token(input);
         tk = tok->kind;
@@ -43,11 +45,16 @@ UPToken Lexer::get_next_token(std::istream * const input) {
     std::stringstream out;
     char current;
 
+    // skip all whitespace and check this is not the end of file yet.
     *input >> std::ws;
     if(input->eof()) {
         return TokenEof::make();
     }
 
+    // read the stream symbol by symbol, extracting symbols only when
+    // they can be a part of the token we are "growing" in `out`.
+    // this allows us avoid having a (static) variable that keeps track
+    // of the last character.
     do {
         *input >> current;
         out << current;

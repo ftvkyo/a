@@ -48,7 +48,7 @@ TEST_CASE("TokenMatcher")
 
     SUBCASE("throws on empty")
     {
-        CHECK_THROWS(f(&matcher, &input));
+        CHECK_THROWS_AS(f(&matcher, &input), CompilerError);
     }
 
     SUBCASE("brackets")
@@ -78,19 +78,19 @@ TEST_CASE("TokenMatcher")
         SUBCASE("ESC control character")
         {
             input << static_cast<char>(0x1B);
-            CHECK_THROWS(f(&matcher, &input));
+            CHECK_THROWS_AS(f(&matcher, &input), SyntaxError);
         }
 
         SUBCASE("DEL control character")
         {
             input << static_cast<char>(0x7F);
-            CHECK_THROWS(f(&matcher, &input));
+            CHECK_THROWS_AS(f(&matcher, &input), SyntaxError);
         }
 
         SUBCASE("CAN control character in the middle of an identifier")
         {
             input << "iden" << static_cast<char>(0x18) << "tifier";
-            CHECK_THROWS(f(&matcher, &input));
+            CHECK_THROWS_AS(f(&matcher, &input), SyntaxError);
         }
 
         SUBCASE("non-ascii")
@@ -98,7 +98,7 @@ TEST_CASE("TokenMatcher")
             // Russian YO and ZH in UTF-8, null-terminated
             unsigned const char s[] = {0x91, 0xD1, 0xB6, 0xD0, 0x00};
             input << s;
-            CHECK_THROWS(f(&matcher, &input));
+            CHECK_THROWS_AS(f(&matcher, &input), SyntaxError);
         }
     }
 }

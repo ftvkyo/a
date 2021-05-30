@@ -18,7 +18,7 @@ public:
     /**
      * Perform the conversion.
      *
-     * @param input The stream to convert to tokens.
+     * @param input The stream to convert into tokens.
      *
      * @returns Result of conversion.
      */
@@ -33,7 +33,7 @@ private:
      *
      * @param c The character to check.
      *
-     * @returns True if it can be a part of a long token, False otherwise.
+     * @returns true if it can be a part of a long token, false otherwise.
      */
     bool is_long_token_char(char c);
 
