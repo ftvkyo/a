@@ -1,0 +1,21 @@
+name: Meson CI
+
+on: [push]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - uses: actions/setup-python@v1
+    - uses: BSFishy/meson-build@v1.0.3
+      with:
+        action: build
+        directory: builddir
+        meson-version: 0.58.0
+        ninja-version: 1.10.0.post2
+    - name: Run tests
+      run: builddir/test/testexe
