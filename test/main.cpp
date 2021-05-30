@@ -7,9 +7,8 @@ TEST_CASE("Build system check")
 {
     CHECK(true);
 
-    SUBCASE("using an exported function")
+    SUBCASE("using exported symbols")
     {
-        CHECK(identity(true) == true);
-        CHECK(identity(false) == false);
+        CHECK_THROWS(throw SyntaxError());
     }
 }

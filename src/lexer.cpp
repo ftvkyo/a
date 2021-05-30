@@ -2,15 +2,15 @@
 
 
 TokenMatcher::TokenMatcher() {
-    token_matches.emplace_back([](std::string s){
+    token_matches.emplace_back([](std::string s) {
         return s == "(";
     }, TokenKind::bracket_left);
 
-    token_matches.emplace_back([](std::string s){
+    token_matches.emplace_back([](std::string s) {
         return s == ")";
     }, TokenKind::bracket_right);
 
-    token_matches.emplace_back([](std::string s){
+    token_matches.emplace_back([](std::string s) {
         for(auto it = s.begin(); it < s.end(); it++) {
             if(not std::isdigit(*it)) {
                 return false;
@@ -19,7 +19,14 @@ TokenMatcher::TokenMatcher() {
         return true;
     }, TokenKind::integer);
 
-    default_token_kind = TokenKind::identifier;
+    token_matches.emplace_back([](std::string s) {
+        for(auto it = s.begin(); it < s.end(); it++) {
+            if(not std::isgraph(*it)) {
+                return false;
+            }
+        }
+        return true;
+    }, TokenKind::identifier);
 }
 
 
@@ -29,7 +36,8 @@ TokenKind TokenMatcher::match(std::string token) {
             return it->second;
         }
     }
-    return default_token_kind;
+
+    throw SyntaxError();
 }
 
 

@@ -1,6 +1,6 @@
 #include "a.hpp"
 
 
-bool identity(bool value) {
-    return value;
+const char* SyntaxError::what() const throw () {
+    return "Syntax Error";
 }

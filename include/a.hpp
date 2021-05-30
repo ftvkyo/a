@@ -3,4 +3,9 @@
 #include "a/lexer.hpp"
 
 
-bool identity(bool);
+/**
+ * Lexer and Parser error.
+ */
+class SyntaxError : public std::exception {
+    const char* what() const throw ();
+};
