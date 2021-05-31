@@ -8,14 +8,14 @@ Lexer::Lexer() {
 }
 
 
-std::vector<UPToken> Lexer::tokenize(std::istream * const input) {
-    std::vector<UPToken> result;
+std::vector<UpToken> Lexer::tokenize(std::istream * const input) {
+    std::vector<UpToken> result;
     TokenKind tk;
 
     // read tokens until we reach the eof
     // eof will also get put into the result vector
     do {
-        UPToken tok = get_next_token(input);
+        UpToken tok = get_next_token(input);
         tk = tok->kind;
         result.emplace_back(std::move(tok));
     } while(tk != TokenKind::eof);
@@ -41,7 +41,7 @@ bool Lexer::is_long_token_pair(char left, char right) {
 }
 
 
-UPToken Lexer::get_next_token(std::istream * const input) {
+UpToken Lexer::get_next_token(std::istream * const input) {
     std::stringstream out;
     char current;
 

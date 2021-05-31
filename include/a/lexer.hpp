@@ -22,7 +22,7 @@ public:
      *
      * @returns Result of conversion.
      */
-    std::vector<UPToken> tokenize(std::istream * input);
+    std::vector<UpToken> tokenize(std::istream * input);
 
 private:
 
@@ -58,7 +58,7 @@ private:
      *
      * @returns The token that was extracted.
      */
-    UPToken get_next_token(std::istream * input);
+    UpToken get_next_token(std::istream * input);
 
     /**
      * List of characters that are tokens on their own even if they could

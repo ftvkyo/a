@@ -33,17 +33,6 @@ enum class TokenKind {
 };
 
 
-// Find definitions below.
-class Token;
-
-
-/**
- * For the sake of polymorphism, we wrap Token into a unique_ptr.
- * It's just too difficult to type.
- */
-typedef std::unique_ptr<Token> UPToken;
-
-
 /**
  * Represents a token. This one is abstract, intended to be used
  * with smart pointers. Actual tokens will inherit from this class.
@@ -70,15 +59,22 @@ protected:
     /**
      * Hidden constructor to reference from children to set the kind.
      *
-     * Each child has a factory method for its UPToken creation.
+     * Each child has a factory method for its UpToken creation.
      */
     Token(TokenKind kind);
 };
 
 
+/**
+ * For the sake of polymorphism, we wrap Token into a unique_ptr.
+ * It's just too difficult to type.
+ */
+typedef std::unique_ptr<Token> UpToken;
+
+
 struct TokenEof : public Token {
 public:
-    static UPToken make();
+    static UpToken make();
     virtual std::string format() override;
 
 private:
@@ -88,7 +84,7 @@ private:
 
 struct TokenBracketLeft : public Token {
 public:
-    static UPToken make();
+    static UpToken make();
     virtual std::string format() override;
 
 private:
@@ -98,7 +94,7 @@ private:
 
 struct TokenBracketRight : public Token {
 public:
-    static UPToken make();
+    static UpToken make();
     virtual std::string format() override;
 
 private:
@@ -108,7 +104,7 @@ private:
 
 struct TokenInteger : public Token {
 public:
-    static UPToken make(int i);
+    static UpToken make(int i);
     virtual std::string format() override;
 
     /**
@@ -126,7 +122,7 @@ private:
 
 struct TokenIdentifier : public Token {
 public:
-    static UPToken make(std::string s);
+    static UpToken make(std::string s);
     virtual std::string format() override;
 
     /**
@@ -157,13 +153,13 @@ public:
      *
      * @returns Result of conversion.
      */
-    UPToken match(std::string token);
+    UpToken match(std::string token);
 
 private:
 
     typedef std::vector<
         std::function<
-            std::optional<UPToken>(std::string)
+            std::optional<UpToken>(std::string)
         >
     > TokenMatches;
 
