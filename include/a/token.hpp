@@ -77,6 +77,8 @@ public:
     static UpToken make();
     virtual std::string format() override;
 
+    friend std::unique_ptr<TokenEof> std::make_unique<TokenEof>();
+
 private:
     TokenEof();
 };
@@ -87,6 +89,8 @@ public:
     static UpToken make();
     virtual std::string format() override;
 
+    friend std::unique_ptr<TokenBracketLeft> std::make_unique<TokenBracketLeft>();
+
 private:
     TokenBracketLeft();
 };
@@ -96,6 +100,8 @@ struct TokenBracketRight : public Token {
 public:
     static UpToken make();
     virtual std::string format() override;
+
+    friend std::unique_ptr<TokenBracketRight> std::make_unique<TokenBracketRight>();
 
 private:
     TokenBracketRight();
@@ -114,6 +120,8 @@ public:
      */
     int value();
 
+    friend std::unique_ptr<TokenInteger> std::make_unique<TokenInteger>(int&);
+
 private:
     TokenInteger(int i);
     int val;
@@ -122,7 +130,7 @@ private:
 
 struct TokenIdentifier : public Token {
 public:
-    static UpToken make(std::string s);
+    static UpToken make(std::string&& s);
     virtual std::string format() override;
 
     /**
@@ -132,8 +140,10 @@ public:
      */
     std::string value();
 
+    friend std::unique_ptr<TokenIdentifier> std::make_unique<TokenIdentifier>(std::string&&);
+
 private:
-    TokenIdentifier(std::string s);
+    TokenIdentifier(std::string&& s);
     std::string val;
 };
 
@@ -153,7 +163,7 @@ public:
      *
      * @returns Result of conversion.
      */
-    UpToken match(std::string token);
+    UpToken match(std::string&& token);
 
 private:
 

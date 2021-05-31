@@ -11,23 +11,26 @@ ExprSeqAstNode::ExprSeqAstNode(std::vector<UpExprAstNode>&& seq) :
 {}
 
 UpExprAstNode ExprSeqAstNode::make(std::vector<UpExprAstNode>&& seq) {
-    return std::unique_ptr<ExprAstNode>(new ExprSeqAstNode(std::move(seq)));
+    return std::make_unique<ExprSeqAstNode>(std::move(seq));
 }
 
 
-IntegerAstNode::IntegerAstNode(int value) :
-    value(value)
+IntegerAstNode::IntegerAstNode(int val) :
+    val(val)
 {}
 
-UpExprAstNode IntegerAstNode::make(int value) {
-    return std::unique_ptr<ExprAstNode>(new IntegerAstNode(value));
+UpExprAstNode IntegerAstNode::make(int val) {
+    (void) this->val;
+    return std::make_unique<IntegerAstNode>(val);
 }
 
 
-IdentifierAstNode::IdentifierAstNode(std::string value) :
-    value(value)
+
+
+IdentifierAstNode::IdentifierAstNode(std::string&& val) :
+    val(val)
 {}
 
-UpExprAstNode IdentifierAstNode::make(std::string value) {
-    return std::unique_ptr<ExprAstNode>(new IdentifierAstNode(value));
+UpExprAstNode IdentifierAstNode::make(std::string&& val) {
+    return std::make_unique<IdentifierAstNode>(std::move(val));
 }

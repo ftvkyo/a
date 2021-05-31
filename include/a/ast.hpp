@@ -20,6 +20,8 @@ class ExprSeqAstNode : public ExprAstNode {
 public:
     UpExprAstNode make(std::vector<UpExprAstNode>&& seq);
 
+    friend std::unique_ptr<ExprSeqAstNode> std::make_unique<ExprSeqAstNode>(std::vector<UpExprAstNode>&&);
+
 private:
     ExprSeqAstNode(std::vector<UpExprAstNode>&& seq);
 
@@ -29,21 +31,25 @@ private:
 
 class IntegerAstNode : public ExprAstNode {
 public:
-    UpExprAstNode make(int value);
+    UpExprAstNode make(int val);
+
+    friend std::unique_ptr<IntegerAstNode> std::make_unique<IntegerAstNode>(int&);
 
 private:
-    IntegerAstNode(int value);
+    IntegerAstNode(int val);
 
-    int value;
+    int val;
 };
 
 
 class IdentifierAstNode : public ExprAstNode {
 public:
-    UpExprAstNode make(std::string value);
+    UpExprAstNode make(std::string&& val);
+
+    friend std::unique_ptr<IdentifierAstNode> std::make_unique<IdentifierAstNode>(std::string&&);
 
 private:
-    IdentifierAstNode(std::string value);
+    IdentifierAstNode(std::string&& val);
 
-    std::string value;
+    std::string val;
 };

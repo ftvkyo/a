@@ -15,7 +15,7 @@ TokenEof::TokenEof() :
 {}
 
 UpToken TokenEof::make() {
-    return std::unique_ptr<TokenEof>(new TokenEof());
+    return std::make_unique<TokenEof>();
 }
 
 std::string TokenEof::format() {
@@ -28,7 +28,7 @@ TokenBracketLeft::TokenBracketLeft() :
 {}
 
 UpToken TokenBracketLeft::make() {
-    return std::unique_ptr<TokenBracketLeft>(new TokenBracketLeft());
+    return std::make_unique<TokenBracketLeft>();
 }
 
 std::string TokenBracketLeft::format() {
@@ -41,7 +41,7 @@ TokenBracketRight::TokenBracketRight() :
 {}
 
 UpToken TokenBracketRight::make() {
-    return std::unique_ptr<TokenBracketRight>(new TokenBracketRight());
+    return std::make_unique<TokenBracketRight>();
 }
 
 std::string TokenBracketRight::format() {
@@ -55,7 +55,7 @@ TokenInteger::TokenInteger(int i) :
 {}
 
 UpToken TokenInteger::make(int i) {
-    return std::unique_ptr<TokenInteger>(new TokenInteger(i));
+    return std::make_unique<TokenInteger>(i);
 }
 
 std::string TokenInteger::format() {
@@ -69,13 +69,13 @@ int TokenInteger::value() {
 }
 
 
-TokenIdentifier::TokenIdentifier(std::string s) :
+TokenIdentifier::TokenIdentifier(std::string&& s) :
     Token(TokenKind::identifier),
     val(s)
 {}
 
-UpToken TokenIdentifier::make(std::string s) {
-    return std::unique_ptr<TokenIdentifier>(new TokenIdentifier(s));
+UpToken TokenIdentifier::make(std::string&& s) {
+    return std::make_unique<TokenIdentifier>(std::move(s));
 }
 
 std::string TokenIdentifier::format() {
@@ -134,13 +134,13 @@ TokenMatcher::TokenMatcher() {
                     return std::nullopt;
                 }
             }
-            return {TokenIdentifier::make(s)};
+            return {TokenIdentifier::make(std::move(s))};
         }
     );
 }
 
 
-UpToken TokenMatcher::match(std::string token) {
+UpToken TokenMatcher::match(std::string&& token) {
     // we don't expect any empty strings here -- whitespace should be
     // filtered out, eof should not go here, so getting it would
     // mean there is a bug in the calling code.
@@ -148,8 +148,8 @@ UpToken TokenMatcher::match(std::string token) {
         throw CompilerError();
     }
 
-    for(auto it = token_matches.begin(); it < token_matches.end(); it++) {
-        std::optional<UpToken> res = (*it)(token);
+    for(auto it : token_matches) {
+        std::optional<UpToken> res = it(token);
         if(res != std::nullopt) {
             // Early return to be sure that only one lambda actually
             // produces a value.
