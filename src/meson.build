@@ -1,7 +1,11 @@
 a_sources = [
     'a.cpp',
+
     'token.cpp',
     'lexer.cpp',
+
+    'ast.cpp',
+    'parser.cpp',
 ]
 
 a_lib = shared_library(
