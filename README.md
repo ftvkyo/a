@@ -12,7 +12,7 @@ in the future, the description above explains just the current state of things.
 # b
 
 ```console
- $ meson builddir && cd builddir
+ $ CC=clang CXX=clang++ meson builddir && cd builddir
  $ meson compile
  $ test/testexe
 ```
