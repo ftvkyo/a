@@ -9,6 +9,8 @@ These implementation details are not very important as they probably
 do not affect the user. The internals might be LISPified or whatever
 in the future, the description above explains just the current state of things.
 
+[DESIGN.md](./DESIGN.md)
+
 # b
 
 ```console

@@ -29,6 +29,19 @@ private:
 };
 
 
+class SpecialFormAstNode : public ExprAstNode {
+public:
+    UpExprAstNode make(std::string&& val);
+
+    friend std::unique_ptr<SpecialFormAstNode> std::make_unique<SpecialFormAstNode>(std::string&&);
+
+private:
+    SpecialFormAstNode(std::string&& val);
+
+    std::string val;
+};
+
+
 class IntegerAstNode : public ExprAstNode {
 public:
     UpExprAstNode make(int val);

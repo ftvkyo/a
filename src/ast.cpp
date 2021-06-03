@@ -15,6 +15,15 @@ UpExprAstNode ExprSeqAstNode::make(std::vector<UpExprAstNode>&& seq) {
 }
 
 
+SpecialFormAstNode::SpecialFormAstNode(std::string&& val) :
+    val(val)
+{}
+
+UpExprAstNode SpecialFormAstNode::make(std::string&& val) {
+    return std::make_unique<SpecialFormAstNode>(std::move(val));
+}
+
+
 IntegerAstNode::IntegerAstNode(int val) :
     val(val)
 {}
@@ -23,8 +32,6 @@ UpExprAstNode IntegerAstNode::make(int val) {
     (void) this->val;
     return std::make_unique<IntegerAstNode>(val);
 }
-
-
 
 
 IdentifierAstNode::IdentifierAstNode(std::string&& val) :

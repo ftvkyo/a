@@ -49,6 +49,24 @@ std::string TokenBracketRight::format() {
 }
 
 
+TokenSpecialForm::TokenSpecialForm(std::string&& s) :
+    Token(TokenKind::special_form),
+    val(s)
+{}
+
+UpToken TokenSpecialForm::make(std::string&& s) {
+    return std::make_unique<TokenSpecialForm>(std::move(s));
+}
+
+std::string TokenSpecialForm::format() {
+    return "sf:" + val;
+}
+
+std::string TokenSpecialForm::value() {
+    return val;
+}
+
+
 TokenInteger::TokenInteger(int i) :
     Token(TokenKind::integer),
     val(i)
@@ -108,6 +126,20 @@ TokenMatcher::TokenMatcher() {
                 return std::nullopt;
             }
             return {TokenBracketRight::make()};
+        }
+    );
+
+    token_matches.emplace_back(
+        [](std::string s) -> std::optional<UpToken> {
+            if(not s.starts_with("@")) {
+                return std::nullopt;
+            }
+            for(auto it = s.begin(); it < s.end(); it++) {
+                if(not isascii(*it) or not std::isgraph(*it)) {
+                    return std::nullopt;
+                }
+            }
+            return {TokenSpecialForm::make(std::move(s))};
         }
     );
 

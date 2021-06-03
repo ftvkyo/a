@@ -22,6 +22,9 @@ enum class TokenKind {
     /// ")"
     bracket_right,
 
+    /// A sequence of characters statring with @
+    special_form,
+
     /// A sequence of characters in range from '0' to '9' of any length.
     integer,
 
@@ -105,6 +108,26 @@ public:
 
 private:
     TokenBracketRight();
+};
+
+
+struct TokenSpecialForm : public Token {
+public:
+    static UpToken make(std::string&& s);
+    virtual std::string format() override;
+
+    /**
+     * Get the value of the token.
+     *
+     * @returns The original std::string value of the token.
+     */
+    std::string value();
+
+    friend std::unique_ptr<TokenSpecialForm> std::make_unique<TokenSpecialForm>(std::string&&);
+
+private:
+    TokenSpecialForm(std::string&& s);
+    std::string val;
 };
 
 

@@ -21,6 +21,13 @@ TEST_CASE("Token")
         CHECK_EQ(tok_r->format(), ")");
     }
 
+    SUBCASE("TokenSpecialForm")
+    {
+        auto tok = TokenSpecialForm::make("@potato");
+        CHECK_EQ(tok->kind, TokenKind::special_form);
+        CHECK_EQ(tok->format(), "sf:@potato");
+    }
+
     SUBCASE("TokenInteger")
     {
         auto tok = TokenInteger::make(42);
@@ -58,6 +65,13 @@ TEST_CASE("TokenMatcher")
 
         auto tok_r = matcher.match(")");
         CHECK_EQ(tok_r->kind, TokenKind::bracket_right);
+    }
+
+    SUBCASE("special form")
+    {
+        auto tok = matcher.match("@i-am-special");
+        CHECK_EQ(tok->kind, TokenKind::special_form);
+        CHECK_EQ(dynamic_cast<TokenSpecialForm*>(tok.get())->value(), "@i-am-special");
     }
 
     SUBCASE("integer")
