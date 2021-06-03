@@ -9,14 +9,7 @@
 class TokenToAst {
 public:
 
-    enum State {
-        GIVE,
-        TAKE,
-    };
-
     TokenToAst();
-
-    State state();
 
     TokenToAst& operator<<(UpToken&& token);
 

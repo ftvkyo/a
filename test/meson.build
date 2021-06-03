@@ -4,6 +4,7 @@ test_sources = [
     'main.cpp',
     'token.cpp',
     'lexer.cpp',
+    'parser.cpp',
 ]
 
 testexe = executable(

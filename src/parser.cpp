@@ -3,9 +3,6 @@
 
 TokenToAst::TokenToAst() = default;
 
-TokenToAst::State TokenToAst::state() {
-    return TokenToAst::GIVE;
-}
 
 TokenToAst& TokenToAst::operator<<(UpToken&& token) {
     switch(token->kind) {
@@ -72,7 +69,7 @@ void TokenToAst::operator>>(TokenToAst& receiver) {
 
 Parser::Parser() = default;
 
-UpExprAstNode parse(std::vector<UpToken>&& tokens) {
+UpExprAstNode Parser::parse(std::vector<UpToken>&& tokens) {
     std::vector<TokenToAst> converters(20);
     size_t depth = 0;
 
