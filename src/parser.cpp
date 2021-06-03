@@ -44,10 +44,13 @@ UpExprAstNode TokenToAst::extract() {
             switch(tok->kind) {
             case TokenKind::special_form:
                 ast_node = SpecialFormAstNode::make(dynamic_cast<TokenSpecialForm*>(tok.get())->value());
+                break;
             case TokenKind::identifier:
                 ast_node = IdentifierAstNode::make(dynamic_cast<TokenIdentifier*>(tok.get())->value());
+                break;
             case TokenKind::integer:
                 ast_node = IntegerAstNode::make(dynamic_cast<TokenInteger*>(tok.get())->value());
+                break;
             default:
                 throw CompilerError();
             }
@@ -87,6 +90,7 @@ UpExprAstNode parse(std::vector<UpToken>&& tokens) {
             }
             depth--;
             converters[depth + 1] >> converters[depth];
+            break;
         case TokenKind::special_form:
         case TokenKind::identifier:
         case TokenKind::integer:
