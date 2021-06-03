@@ -51,9 +51,9 @@ public:
     /**
      * Get a pretty representation of this token.
      *
-     * @returns Prettily formatted token, for printing.
+     * @param out Where to put the pretty thing into.
      */
-    virtual std::string format() = 0;
+    virtual void inspect(std::ostream* out) = 0;
 
     virtual ~Token() = 0;
 
@@ -78,7 +78,8 @@ typedef std::unique_ptr<Token> UpToken;
 struct TokenEof : public Token {
 public:
     static UpToken make();
-    virtual std::string format() override;
+
+    virtual void inspect(std::ostream* out) override;
 
     friend std::unique_ptr<TokenEof> std::make_unique<TokenEof>();
 
@@ -90,7 +91,8 @@ private:
 struct TokenBracketLeft : public Token {
 public:
     static UpToken make();
-    virtual std::string format() override;
+
+    virtual void inspect(std::ostream* out) override;
 
     friend std::unique_ptr<TokenBracketLeft> std::make_unique<TokenBracketLeft>();
 
@@ -102,7 +104,8 @@ private:
 struct TokenBracketRight : public Token {
 public:
     static UpToken make();
-    virtual std::string format() override;
+
+    virtual void inspect(std::ostream* out) override;
 
     friend std::unique_ptr<TokenBracketRight> std::make_unique<TokenBracketRight>();
 
@@ -114,7 +117,8 @@ private:
 struct TokenSpecialForm : public Token {
 public:
     static UpToken make(std::string&& s);
-    virtual std::string format() override;
+
+    virtual void inspect(std::ostream* out) override;
 
     /**
      * Get the value of the token.
@@ -134,7 +138,8 @@ private:
 struct TokenInteger : public Token {
 public:
     static UpToken make(int i);
-    virtual std::string format() override;
+
+    virtual void inspect(std::ostream* out) override;
 
     /**
      * Get the value of the token.
@@ -154,7 +159,8 @@ private:
 struct TokenIdentifier : public Token {
 public:
     static UpToken make(std::string&& s);
-    virtual std::string format() override;
+
+    virtual void inspect(std::ostream* out) override;
 
     /**
      * Get the value of the token.

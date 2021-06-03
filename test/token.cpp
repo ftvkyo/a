@@ -3,44 +3,55 @@
 
 TEST_CASE("Token")
 {
+    std::stringstream ss;
+    std::string expected;
+
     SUBCASE("TokenEof")
     {
         auto tok = TokenEof::make();
         CHECK_EQ(tok->kind, TokenKind::eof);
-        CHECK_EQ(tok->format(), "eof");
+        tok->inspect(&ss);
+        expected = "eof";
     }
 
     SUBCASE("TokenBrackets")
     {
         auto tok_l = TokenBracketLeft::make();
         CHECK_EQ(tok_l->kind, TokenKind::bracket_left);
-        CHECK_EQ(tok_l->format(), "(");
+        tok_l->inspect(&ss);
 
         auto tok_r = TokenBracketRight::make();
         CHECK_EQ(tok_r->kind, TokenKind::bracket_right);
-        CHECK_EQ(tok_r->format(), ")");
+        tok_r->inspect(&ss);
+
+        expected = "()";
     }
 
     SUBCASE("TokenSpecialForm")
     {
         auto tok = TokenSpecialForm::make("@potato");
         CHECK_EQ(tok->kind, TokenKind::special_form);
-        CHECK_EQ(tok->format(), "sf:@potato");
+        tok->inspect(&ss);
+        expected = "sf:@potato";
     }
 
     SUBCASE("TokenInteger")
     {
         auto tok = TokenInteger::make(42);
         CHECK_EQ(tok->kind, TokenKind::integer);
-        CHECK_EQ(tok->format(), "int:42");
+        tok->inspect(&ss);
+        expected = "int:42";
     }
 
     SUBCASE("TokenIdentifier")
     {
         auto tok = TokenIdentifier::make("potato");
         CHECK_EQ(tok->kind, TokenKind::identifier);
-        CHECK_EQ(tok->format(), "id:potato");
+        tok->inspect(&ss);
+        expected = "id:potato";
     }
+
+    CHECK_EQ(ss.str(), expected);
 }
 
 

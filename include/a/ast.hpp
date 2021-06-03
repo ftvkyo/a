@@ -20,9 +20,12 @@ enum class AstNodeKind {
 
 class ExprAstNode {
 public:
-    virtual ~ExprAstNode() = 0;
 
     AstNodeKind kind;
+
+    virtual void inspect(std::ostream* output) = 0;
+
+    virtual ~ExprAstNode() = 0;
 
 protected:
     ExprAstNode(AstNodeKind kind);
@@ -36,6 +39,8 @@ class NilAstNode : public ExprAstNode {
 public:
     static UpExprAstNode make();
 
+    virtual void inspect(std::ostream* output);
+
     friend std::unique_ptr<NilAstNode> std::make_unique<NilAstNode>();
 
 protected:
@@ -46,6 +51,8 @@ protected:
 class SeqAstNode : public ExprAstNode {
 public:
     static UpExprAstNode make(std::vector<UpExprAstNode>&& seq);
+
+    virtual void inspect(std::ostream* output);
 
     friend std::unique_ptr<SeqAstNode> std::make_unique<SeqAstNode>(std::vector<UpExprAstNode>&&);
 
@@ -60,6 +67,8 @@ class SpecialFormAstNode : public ExprAstNode {
 public:
     static UpExprAstNode make(std::string&& val);
 
+    virtual void inspect(std::ostream* output);
+
     friend std::unique_ptr<SpecialFormAstNode> std::make_unique<SpecialFormAstNode>(std::string&&);
 
 protected:
@@ -73,6 +82,8 @@ class IntegerAstNode : public ExprAstNode {
 public:
     static UpExprAstNode make(int val);
 
+    virtual void inspect(std::ostream* output);
+
     friend std::unique_ptr<IntegerAstNode> std::make_unique<IntegerAstNode>(int&);
 
 protected:
@@ -85,6 +96,8 @@ protected:
 class IdentifierAstNode : public ExprAstNode {
 public:
     static UpExprAstNode make(std::string&& val);
+
+    virtual void inspect(std::ostream* output);
 
     friend std::unique_ptr<IdentifierAstNode> std::make_unique<IdentifierAstNode>(std::string&&);
 

@@ -18,8 +18,8 @@ UpToken TokenEof::make() {
     return std::make_unique<TokenEof>();
 }
 
-std::string TokenEof::format() {
-    return "eof";
+void TokenEof::inspect(std::ostream* out) {
+    *out << "eof";
 }
 
 
@@ -31,8 +31,8 @@ UpToken TokenBracketLeft::make() {
     return std::make_unique<TokenBracketLeft>();
 }
 
-std::string TokenBracketLeft::format() {
-    return "(";
+void TokenBracketLeft::inspect(std::ostream* out) {
+    *out << "(";
 }
 
 
@@ -44,8 +44,8 @@ UpToken TokenBracketRight::make() {
     return std::make_unique<TokenBracketRight>();
 }
 
-std::string TokenBracketRight::format() {
-    return ")";
+void TokenBracketRight::inspect(std::ostream* out) {
+    *out << ")";
 }
 
 
@@ -58,8 +58,8 @@ UpToken TokenSpecialForm::make(std::string&& s) {
     return std::make_unique<TokenSpecialForm>(std::move(s));
 }
 
-std::string TokenSpecialForm::format() {
-    return "sf:" + val;
+void TokenSpecialForm::inspect(std::ostream* out) {
+    *out << "sf:" << val;
 }
 
 std::string TokenSpecialForm::value() {
@@ -76,10 +76,8 @@ UpToken TokenInteger::make(int i) {
     return std::make_unique<TokenInteger>(i);
 }
 
-std::string TokenInteger::format() {
-    std::stringstream ss;
-    ss << "int:" << val;
-    return ss.str();
+void TokenInteger::inspect(std::ostream* out) {
+    *out << "int:" << val;
 }
 
 int TokenInteger::value() {
@@ -96,8 +94,8 @@ UpToken TokenIdentifier::make(std::string&& s) {
     return std::make_unique<TokenIdentifier>(std::move(s));
 }
 
-std::string TokenIdentifier::format() {
-    return "id:" + val;
+void TokenIdentifier::inspect(std::ostream* out) {
+    *out << "id:" << val;
 }
 
 std::string TokenIdentifier::value() {
