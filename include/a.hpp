@@ -1,6 +1,7 @@
 #pragma once
 
 #include "a/lexer.hpp"
+#include "a/parser.hpp"
 
 
 /**

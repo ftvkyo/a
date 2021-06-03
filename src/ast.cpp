@@ -1,21 +1,34 @@
 #include "a/ast.hpp"
 
 
-ExprAstNode::ExprAstNode() = default;
+ExprAstNode::ExprAstNode(AstNodeKind kind) :
+    kind(kind)
+{}
 
 ExprAstNode::~ExprAstNode() = default;
 
 
-ExprSeqAstNode::ExprSeqAstNode(std::vector<UpExprAstNode>&& seq) :
+NilAstNode::NilAstNode() :
+    ExprAstNode(AstNodeKind::nil)
+{}
+
+UpExprAstNode NilAstNode::make() {
+    return std::make_unique<NilAstNode>();
+}
+
+
+SeqAstNode::SeqAstNode(std::vector<UpExprAstNode>&& seq) :
+    ExprAstNode(AstNodeKind::sequence),
     seq(std::move(seq))
 {}
 
-UpExprAstNode ExprSeqAstNode::make(std::vector<UpExprAstNode>&& seq) {
-    return std::make_unique<ExprSeqAstNode>(std::move(seq));
+UpExprAstNode SeqAstNode::make(std::vector<UpExprAstNode>&& seq) {
+    return std::make_unique<SeqAstNode>(std::move(seq));
 }
 
 
 SpecialFormAstNode::SpecialFormAstNode(std::string&& val) :
+    ExprAstNode(AstNodeKind::special_form),
     val(val)
 {}
 
@@ -25,16 +38,17 @@ UpExprAstNode SpecialFormAstNode::make(std::string&& val) {
 
 
 IntegerAstNode::IntegerAstNode(int val) :
+    ExprAstNode(AstNodeKind::integer),
     val(val)
 {}
 
 UpExprAstNode IntegerAstNode::make(int val) {
-    (void) this->val;
     return std::make_unique<IntegerAstNode>(val);
 }
 
 
 IdentifierAstNode::IdentifierAstNode(std::string&& val) :
+    ExprAstNode(AstNodeKind::identifier),
     val(val)
 {}
 

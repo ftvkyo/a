@@ -4,26 +4,53 @@
 #include <memory>
 
 
+enum class AstNodeKind {
+    // ()
+    nil,
+
+    sequence,
+
+    special_form,
+
+    integer,
+
+    identifier,
+};
+
+
 class ExprAstNode {
 public:
     virtual ~ExprAstNode() = 0;
 
+    AstNodeKind kind;
+
 protected:
-    ExprAstNode();
+    ExprAstNode(AstNodeKind kind);
 };
 
 
 typedef std::unique_ptr<ExprAstNode> UpExprAstNode;
 
 
-class ExprSeqAstNode : public ExprAstNode {
+class NilAstNode : public ExprAstNode {
 public:
-    UpExprAstNode make(std::vector<UpExprAstNode>&& seq);
+    static UpExprAstNode make();
 
-    friend std::unique_ptr<ExprSeqAstNode> std::make_unique<ExprSeqAstNode>(std::vector<UpExprAstNode>&&);
+    friend std::unique_ptr<NilAstNode> std::make_unique<NilAstNode>();
 
-private:
-    ExprSeqAstNode(std::vector<UpExprAstNode>&& seq);
+protected:
+    NilAstNode();
+};
+
+
+class SeqAstNode : public ExprAstNode {
+public:
+    static UpExprAstNode make(std::vector<UpExprAstNode>&& seq);
+
+    friend std::unique_ptr<SeqAstNode> std::make_unique<SeqAstNode>(std::vector<UpExprAstNode>&&);
+
+protected:
+    SeqAstNode(std::vector<UpExprAstNode>&& seq);
 
     std::vector<UpExprAstNode> seq;
 };
@@ -31,11 +58,11 @@ private:
 
 class SpecialFormAstNode : public ExprAstNode {
 public:
-    UpExprAstNode make(std::string&& val);
+    static UpExprAstNode make(std::string&& val);
 
     friend std::unique_ptr<SpecialFormAstNode> std::make_unique<SpecialFormAstNode>(std::string&&);
 
-private:
+protected:
     SpecialFormAstNode(std::string&& val);
 
     std::string val;
@@ -44,11 +71,11 @@ private:
 
 class IntegerAstNode : public ExprAstNode {
 public:
-    UpExprAstNode make(int val);
+    static UpExprAstNode make(int val);
 
     friend std::unique_ptr<IntegerAstNode> std::make_unique<IntegerAstNode>(int&);
 
-private:
+protected:
     IntegerAstNode(int val);
 
     int val;
@@ -57,11 +84,11 @@ private:
 
 class IdentifierAstNode : public ExprAstNode {
 public:
-    UpExprAstNode make(std::string&& val);
+    static UpExprAstNode make(std::string&& val);
 
     friend std::unique_ptr<IdentifierAstNode> std::make_unique<IdentifierAstNode>(std::string&&);
 
-private:
+protected:
     IdentifierAstNode(std::string&& val);
 
     std::string val;
