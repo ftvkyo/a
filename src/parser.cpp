@@ -36,13 +36,13 @@ UpExprAstNode TokenToAst::extract() {
             UpToken tok = std::move(std::get<UpToken>(token));
             switch(tok->kind) {
             case TokenKind::special_form:
-                ast_node = SpecialFormAstNode::make(dynamic_cast<TokenSpecialForm*>(tok.get())->value());
+                ast_node = SpecialFormAstNode::make(tok->get_string());
                 break;
             case TokenKind::identifier:
-                ast_node = IdentifierAstNode::make(dynamic_cast<TokenIdentifier*>(tok.get())->value());
+                ast_node = IdentifierAstNode::make(tok->get_string());
                 break;
             case TokenKind::integer:
-                ast_node = IntegerAstNode::make(dynamic_cast<TokenInteger*>(tok.get())->value());
+                ast_node = IntegerAstNode::make(tok->get_int());
                 break;
             default:
                 throw CompilerError();

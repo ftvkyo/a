@@ -82,21 +82,21 @@ TEST_CASE("TokenMatcher")
     {
         auto tok = matcher.match("@i-am-special");
         CHECK_EQ(tok->kind, TokenKind::special_form);
-        CHECK_EQ(dynamic_cast<TokenSpecialForm*>(tok.get())->value(), "@i-am-special");
+        CHECK_EQ(tok->get_string(), "@i-am-special");
     }
 
     SUBCASE("integer")
     {
         auto tok = matcher.match("42");
         CHECK_EQ(tok->kind, TokenKind::integer);
-        CHECK_EQ(dynamic_cast<TokenInteger*>(tok.get())->value(), 42);
+        CHECK_EQ(tok->get_int(), 42);
     }
 
     SUBCASE("identifier")
     {
         auto tok = matcher.match("identifier?");
         CHECK_EQ(tok->kind, TokenKind::identifier);
-        CHECK_EQ(dynamic_cast<TokenIdentifier*>(tok.get())->value(), "identifier?");
+        CHECK_EQ(tok->get_string(), "identifier?");
     }
 
     SUBCASE("throws on broken identifiers") {

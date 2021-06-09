@@ -48,6 +48,10 @@ public:
      */
     TokenKind kind;
 
+    virtual int get_int();
+
+    virtual std::string get_string();
+
     /**
      * Get a pretty representation of this token.
      *
@@ -118,14 +122,9 @@ struct TokenSpecialForm : public Token {
 public:
     static UpToken make(std::string&& s);
 
-    virtual void inspect(std::ostream* out) override;
+    virtual std::string get_string() override;
 
-    /**
-     * Get the value of the token.
-     *
-     * @returns The original std::string value of the token.
-     */
-    std::string value();
+    virtual void inspect(std::ostream* out) override;
 
     friend std::unique_ptr<TokenSpecialForm> std::make_unique<TokenSpecialForm>(std::string&&);
 
@@ -139,14 +138,9 @@ struct TokenInteger : public Token {
 public:
     static UpToken make(int i);
 
-    virtual void inspect(std::ostream* out) override;
+    virtual int get_int() override;
 
-    /**
-     * Get the value of the token.
-     *
-     * @returns The original integer value of the token.
-     */
-    int value();
+    virtual void inspect(std::ostream* out) override;
 
     friend std::unique_ptr<TokenInteger> std::make_unique<TokenInteger>(int&);
 
@@ -160,14 +154,9 @@ struct TokenIdentifier : public Token {
 public:
     static UpToken make(std::string&& s);
 
-    virtual void inspect(std::ostream* out) override;
+    virtual std::string get_string() override;
 
-    /**
-     * Get the value of the token.
-     *
-     * @returns The original std::string value of the token.
-     */
-    std::string value();
+    virtual void inspect(std::ostream* out) override;
 
     friend std::unique_ptr<TokenIdentifier> std::make_unique<TokenIdentifier>(std::string&&);
 

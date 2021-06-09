@@ -7,6 +7,14 @@ Token::Token(TokenKind kind) :
     kind(kind)
 {}
 
+int Token::get_int() {
+    throw CompilerError();
+}
+
+std::string Token::get_string() {
+    throw CompilerError();
+}
+
 Token::~Token() = default;
 
 
@@ -58,12 +66,12 @@ UpToken TokenSpecialForm::make(std::string&& s) {
     return std::make_unique<TokenSpecialForm>(std::move(s));
 }
 
-void TokenSpecialForm::inspect(std::ostream* out) {
-    *out << "sf:" << val;
+std::string TokenSpecialForm::get_string() {
+    return val;
 }
 
-std::string TokenSpecialForm::value() {
-    return val;
+void TokenSpecialForm::inspect(std::ostream* out) {
+    *out << "sf:" << val;
 }
 
 
@@ -76,12 +84,12 @@ UpToken TokenInteger::make(int i) {
     return std::make_unique<TokenInteger>(i);
 }
 
-void TokenInteger::inspect(std::ostream* out) {
-    *out << "int:" << val;
+int TokenInteger::get_int() {
+    return val;
 }
 
-int TokenInteger::value() {
-    return val;
+void TokenInteger::inspect(std::ostream* out) {
+    *out << "int:" << val;
 }
 
 
@@ -94,12 +102,12 @@ UpToken TokenIdentifier::make(std::string&& s) {
     return std::make_unique<TokenIdentifier>(std::move(s));
 }
 
-void TokenIdentifier::inspect(std::ostream* out) {
-    *out << "id:" << val;
+std::string TokenIdentifier::get_string() {
+    return val;
 }
 
-std::string TokenIdentifier::value() {
-    return val;
+void TokenIdentifier::inspect(std::ostream* out) {
+    *out << "id:" << val;
 }
 
 
