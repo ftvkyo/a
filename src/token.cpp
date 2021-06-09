@@ -132,8 +132,8 @@ TokenMatcher::TokenMatcher() {
             if(not s.starts_with("@")) {
                 return std::nullopt;
             }
-            for(auto it = s.begin(); it < s.end(); it++) {
-                if(not isascii(*it) or not std::isgraph(*it)) {
+            for(auto c : s) {
+                if(not isascii(c) or not std::isgraph(c)) {
                     return std::nullopt;
                 }
             }
@@ -143,8 +143,8 @@ TokenMatcher::TokenMatcher() {
 
     token_matches.emplace_back(
         [](std::string s) -> std::optional<UpToken> {
-            for(auto it = s.begin(); it < s.end(); it++) {
-                if(not std::isdigit(*it)) {
+            for(auto c : s) {
+                if(not std::isdigit(c)) {
                     return std::nullopt;
                 }
             }
@@ -159,8 +159,8 @@ TokenMatcher::TokenMatcher() {
 
     token_matches.emplace_back(
         [](std::string s) -> std::optional<UpToken> {
-            for(auto it = s.begin(); it < s.end(); it++) {
-                if(not isascii(*it) or not std::isgraph(*it)) {
+            for(auto c : s) {
+                if(not isascii(c) or not std::isgraph(c)) {
                     return std::nullopt;
                 }
             }

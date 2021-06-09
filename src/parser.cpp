@@ -30,10 +30,10 @@ TokenToAst& TokenToAst::operator<<(UpExprAstNode&& ast_node) {
 UpExprAstNode TokenToAst::extract() {
     std::vector<UpExprAstNode> nodes;
     nodes.reserve(stack.size());
-    for(size_t i = 0; i < stack.size(); i++) {
+    for(auto&& token : stack) {
         UpExprAstNode ast_node;
-        if(std::holds_alternative<UpToken>(stack[i])) {
-            UpToken tok = std::move(std::get<UpToken>(stack[i]));
+        if(std::holds_alternative<UpToken>(token)) {
+            UpToken tok = std::move(std::get<UpToken>(token));
             switch(tok->kind) {
             case TokenKind::special_form:
                 ast_node = SpecialFormAstNode::make(dynamic_cast<TokenSpecialForm*>(tok.get())->value());
@@ -48,7 +48,7 @@ UpExprAstNode TokenToAst::extract() {
                 throw CompilerError();
             }
         } else {
-            ast_node = std::move(std::get<UpExprAstNode>(stack[i]));
+            ast_node = std::move(std::get<UpExprAstNode>(token));
         }
         nodes.emplace_back(std::move(ast_node));
     }
