@@ -5,9 +5,6 @@
 
 
 enum class AstNodeKind {
-    // ()
-    nil,
-
     sequence,
 
     special_form,
@@ -33,19 +30,6 @@ protected:
 
 
 typedef std::unique_ptr<ExprAstNode> UpExprAstNode;
-
-
-class NilAstNode : public ExprAstNode {
-public:
-    static UpExprAstNode make();
-
-    virtual void inspect(std::ostream* output);
-
-    friend std::unique_ptr<NilAstNode> std::make_unique<NilAstNode>();
-
-protected:
-    NilAstNode();
-};
 
 
 class SeqAstNode : public ExprAstNode {

@@ -8,19 +8,6 @@ ExprAstNode::ExprAstNode(AstNodeKind kind) :
 ExprAstNode::~ExprAstNode() = default;
 
 
-NilAstNode::NilAstNode() :
-    ExprAstNode(AstNodeKind::nil)
-{}
-
-UpExprAstNode NilAstNode::make() {
-    return std::make_unique<NilAstNode>();
-}
-
-void NilAstNode::inspect(std::ostream* out) {
-    *out << "()";
-}
-
-
 SeqAstNode::SeqAstNode(std::vector<UpExprAstNode>&& seq) :
     ExprAstNode(AstNodeKind::sequence),
     seq(std::move(seq))

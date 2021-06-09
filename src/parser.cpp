@@ -28,10 +28,6 @@ TokenToAst& TokenToAst::operator<<(UpExprAstNode&& ast_node) {
 
 
 UpExprAstNode TokenToAst::extract() {
-    if(stack.empty()) {
-        return NilAstNode::make();
-    }
-
     std::vector<UpExprAstNode> nodes;
     nodes.reserve(stack.size());
     for(size_t i = 0; i < stack.size(); i++) {
