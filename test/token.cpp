@@ -1,7 +1,7 @@
 #include "prelude.hpp"
 
 
-TEST_CASE("Token")
+TEST_CASE("Token creation and inspection")
 {
     std::stringstream ss;
     std::string expected;
@@ -52,6 +52,73 @@ TEST_CASE("Token")
     }
 
     CHECK_EQ(ss.str(), expected);
+}
+
+
+TEST_CASE("Token getters")
+{
+    SUBCASE("throw when no such data")
+    {
+        SUBCASE("TokenEof")
+        {
+            auto tok = TokenEof::make();
+            CHECK_THROWS_AS(tok->get_int(), CompilerError);
+            CHECK_THROWS_AS(tok->get_string(), CompilerError);
+        }
+
+        SUBCASE("TokenBrackets")
+        {
+            auto tok_l = TokenBracketLeft::make();
+            CHECK_THROWS_AS(tok_l->get_int(), CompilerError);
+            CHECK_THROWS_AS(tok_l->get_string(), CompilerError);
+
+            auto tok_r = TokenBracketRight::make();
+            CHECK_THROWS_AS(tok_r->get_int(), CompilerError);
+            CHECK_THROWS_AS(tok_r->get_string(), CompilerError);
+        }
+    }
+
+    SUBCASE("throw when data is of a different type")
+    {
+        SUBCASE("TokenSpecialForm")
+        {
+            auto tok = TokenSpecialForm::make("@potato");
+            CHECK_THROWS_AS(tok->get_int(), CompilerError);
+        }
+
+        SUBCASE("TokenInteger")
+        {
+            auto tok = TokenInteger::make(42);
+            CHECK_THROWS_AS(tok->get_string(), CompilerError);
+        }
+
+        SUBCASE("TokenIdentifier")
+        {
+            auto tok = TokenIdentifier::make("potato");
+            CHECK_THROWS_AS(tok->get_int(), CompilerError);
+        }
+    }
+
+    SUBCASE("work when data is of the correct type")
+    {
+        SUBCASE("TokenSpecialForm")
+        {
+            auto tok = TokenSpecialForm::make("@potato");
+            CHECK_EQ(tok->get_string(), "@potato");
+        }
+
+        SUBCASE("TokenInteger")
+        {
+            auto tok = TokenInteger::make(42);
+            CHECK_EQ(tok->get_int(), 42);
+        }
+
+        SUBCASE("TokenIdentifier")
+        {
+            auto tok = TokenIdentifier::make("potato");
+            CHECK_EQ(tok->get_string(), "potato");
+        }
+    }
 }
 
 
