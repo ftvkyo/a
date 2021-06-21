@@ -22,6 +22,12 @@ public:
 
     virtual void inspect(std::ostream* output) = 0;
 
+    virtual std::vector<pAst> get_seq();
+
+    virtual int get_int();
+
+    virtual std::string get_string();
+
     virtual ~AstExpression() = 0;
 
 protected:
@@ -38,6 +44,8 @@ public:
 
     virtual void inspect(std::ostream* output);
 
+    virtual std::vector<pAst> get_seq() override;
+
 protected:
     AstSequence(std::vector<pAst>&& seq);
 
@@ -50,6 +58,8 @@ public:
     static pAst make(std::string&& val);
 
     virtual void inspect(std::ostream* output);
+
+    virtual std::string get_string() override;
 
 protected:
     AstSpecialForm(std::string&& val);
@@ -64,6 +74,8 @@ public:
 
     virtual void inspect(std::ostream* output);
 
+    virtual int get_int() override;
+
 protected:
     AstInteger(int val);
 
@@ -76,6 +88,8 @@ public:
     static pAst make(std::string&& val);
 
     virtual void inspect(std::ostream* output);
+
+    virtual std::string get_string() override;
 
 protected:
     AstIdentifier(std::string&& val);
