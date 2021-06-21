@@ -69,6 +69,8 @@ pAst Parser::parse(std::vector<pToken>&& tokens) {
     std::vector<TokenToAst> converters(20);
     size_t depth = 0;
 
+    converters[0] << AstSpecialForm::make("@block");
+
     for(auto& tok : tokens) {
         switch(tok->kind) {
         case TokenKind::bracket_left:

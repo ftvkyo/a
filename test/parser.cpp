@@ -13,49 +13,49 @@ TEST_CASE("Parser")
 
     SUBCASE("processing an empty string")
     {
-        expected = "()";
+        expected = "(@block)";
     }
 
     SUBCASE("processing basic brackets")
     {
         input << "()";
-        expected = "(())";
+        expected = "(@block ())";
     }
 
     SUBCASE("processing advanced brackets")
     {
         input << "()(()) (()())";
-        expected = "(() (()) (() ()))";
+        expected = "(@block () (()) (() ()))";
     }
 
     SUBCASE("processing brackets with some data and special forms inbetween")
     {
         input << "(52) (@potat) (identifier?)";
-        expected = "((52) (@potat) (identifier?))";
+        expected = "(@block (52) (@potat) (identifier?))";
     }
 
     SUBCASE("processing newlines")
     {
         input << "\n \n";
-        expected = "()";
+        expected = "(@block)";
     }
 
     SUBCASE("just data")
     {
         input << "abc () (15)";
-        expected = "(abc () (15))";
+        expected = "(@block abc () (15))";
     }
 
     SUBCASE("whitespace")
     {
         input << "abc    ()   \n ( 15      )";
-        expected = "(abc () (15))";
+        expected = "(@block abc () (15))";
     }
 
     SUBCASE("a little of everything")
     {
         input << "@salad of-potat 256 42.0 (amogus)";
-        expected = "(@salad of-potat 256 42.0 (amogus))";
+        expected = "(@block @salad of-potat 256 42.0 (amogus))";
     }
 
     auto tokens = lexer.tokenize(&input);
