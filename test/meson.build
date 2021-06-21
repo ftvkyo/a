@@ -4,6 +4,7 @@ test_sources = [
     'main.cpp',
     'token.cpp',
     'lexer.cpp',
+    'parser.cpp',
 ]
 
 testexe = executable(
@@ -11,6 +12,7 @@ testexe = executable(
     test_sources,
     include_directories: [a_inc, doctest_inc],
     link_with: a_lib,
+    dependencies: llvm,
 )
 
 test('All tests', testexe)

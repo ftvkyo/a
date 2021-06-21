@@ -22,6 +22,9 @@ enum class TokenKind {
     /// ")"
     bracket_right,
 
+    /// A sequence of characters statring with @
+    special_form,
+
     /// A sequence of characters in range from '0' to '9' of any length.
     integer,
 
@@ -31,17 +34,6 @@ enum class TokenKind {
      */
     identifier,
 };
-
-
-// Find definitions below.
-class Token;
-
-
-/**
- * For the sake of polymorphism, we wrap Token into a unique_ptr.
- * It's just too difficult to type.
- */
-typedef std::unique_ptr<Token> UPToken;
 
 
 /**
@@ -56,12 +48,16 @@ public:
      */
     TokenKind kind;
 
+    virtual int get_int();
+
+    virtual std::string get_string();
+
     /**
      * Get a pretty representation of this token.
      *
-     * @returns Prettily formatted token, for printing.
+     * @param out Where to put the pretty thing into.
      */
-    virtual std::string format() = 0;
+    virtual void inspect(std::ostream* out) = 0;
 
     virtual ~Token() = 0;
 
@@ -70,16 +66,24 @@ protected:
     /**
      * Hidden constructor to reference from children to set the kind.
      *
-     * Each child has a factory method for its UPToken creation.
+     * Each child has a factory method for its UpToken creation.
      */
     Token(TokenKind kind);
 };
 
 
+/**
+ * For the sake of polymorphism, we wrap Token into a shared_ptr.
+ * It's just too difficult to type.
+ */
+typedef std::shared_ptr<Token> pToken;
+
+
 struct TokenEof : public Token {
 public:
-    static UPToken make();
-    virtual std::string format() override;
+    static pToken make();
+
+    virtual void inspect(std::ostream* out) override;
 
 private:
     TokenEof();
@@ -88,8 +92,9 @@ private:
 
 struct TokenBracketLeft : public Token {
 public:
-    static UPToken make();
-    virtual std::string format() override;
+    static pToken make();
+
+    virtual void inspect(std::ostream* out) override;
 
 private:
     TokenBracketLeft();
@@ -98,25 +103,36 @@ private:
 
 struct TokenBracketRight : public Token {
 public:
-    static UPToken make();
-    virtual std::string format() override;
+    static pToken make();
+
+    virtual void inspect(std::ostream* out) override;
 
 private:
     TokenBracketRight();
 };
 
 
+struct TokenSpecialForm : public Token {
+public:
+    static pToken make(std::string&& s);
+
+    virtual std::string get_string() override;
+
+    virtual void inspect(std::ostream* out) override;
+
+private:
+    TokenSpecialForm(std::string&& s);
+    std::string val;
+};
+
+
 struct TokenInteger : public Token {
 public:
-    static UPToken make(int i);
-    virtual std::string format() override;
+    static pToken make(int i);
 
-    /**
-     * Get the value of the token.
-     *
-     * @returns The original integer value of the token.
-     */
-    int value();
+    virtual int get_int() override;
+
+    virtual void inspect(std::ostream* out) override;
 
 private:
     TokenInteger(int i);
@@ -126,18 +142,14 @@ private:
 
 struct TokenIdentifier : public Token {
 public:
-    static UPToken make(std::string s);
-    virtual std::string format() override;
+    static pToken make(std::string&& s);
 
-    /**
-     * Get the value of the token.
-     *
-     * @returns The original std::string value of the token.
-     */
-    std::string value();
+    virtual std::string get_string() override;
+
+    virtual void inspect(std::ostream* out) override;
 
 private:
-    TokenIdentifier(std::string s);
+    TokenIdentifier(std::string&& s);
     std::string val;
 };
 
@@ -157,13 +169,13 @@ public:
      *
      * @returns Result of conversion.
      */
-    UPToken match(std::string token);
+    pToken match(std::string&& token);
 
 private:
 
     typedef std::vector<
         std::function<
-            std::optional<UPToken>(std::string)
+            std::optional<pToken>(std::string)
         >
     > TokenMatches;
 

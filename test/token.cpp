@@ -1,38 +1,123 @@
 #include "prelude.hpp"
 
 
-TEST_CASE("Token")
+TEST_CASE("Token creation and inspection")
 {
+    std::stringstream ss;
+    std::string expected;
+
     SUBCASE("TokenEof")
     {
         auto tok = TokenEof::make();
         CHECK_EQ(tok->kind, TokenKind::eof);
-        CHECK_EQ(tok->format(), "eof");
+        tok->inspect(&ss);
+        expected = "eof";
     }
 
     SUBCASE("TokenBrackets")
     {
         auto tok_l = TokenBracketLeft::make();
         CHECK_EQ(tok_l->kind, TokenKind::bracket_left);
-        CHECK_EQ(tok_l->format(), "(");
+        tok_l->inspect(&ss);
 
         auto tok_r = TokenBracketRight::make();
         CHECK_EQ(tok_r->kind, TokenKind::bracket_right);
-        CHECK_EQ(tok_r->format(), ")");
+        tok_r->inspect(&ss);
+
+        expected = "()";
+    }
+
+    SUBCASE("TokenSpecialForm")
+    {
+        auto tok = TokenSpecialForm::make("@potato");
+        CHECK_EQ(tok->kind, TokenKind::special_form);
+        tok->inspect(&ss);
+        expected = "sf:@potato";
     }
 
     SUBCASE("TokenInteger")
     {
         auto tok = TokenInteger::make(42);
         CHECK_EQ(tok->kind, TokenKind::integer);
-        CHECK_EQ(tok->format(), "int:42");
+        tok->inspect(&ss);
+        expected = "int:42";
     }
 
     SUBCASE("TokenIdentifier")
     {
         auto tok = TokenIdentifier::make("potato");
         CHECK_EQ(tok->kind, TokenKind::identifier);
-        CHECK_EQ(tok->format(), "id:potato");
+        tok->inspect(&ss);
+        expected = "id:potato";
+    }
+
+    CHECK_EQ(ss.str(), expected);
+}
+
+
+TEST_CASE("Token getters")
+{
+    SUBCASE("throw when no such data")
+    {
+        SUBCASE("TokenEof")
+        {
+            auto tok = TokenEof::make();
+            CHECK_THROWS_AS(tok->get_int(), CompilerError);
+            CHECK_THROWS_AS(tok->get_string(), CompilerError);
+        }
+
+        SUBCASE("TokenBrackets")
+        {
+            auto tok_l = TokenBracketLeft::make();
+            CHECK_THROWS_AS(tok_l->get_int(), CompilerError);
+            CHECK_THROWS_AS(tok_l->get_string(), CompilerError);
+
+            auto tok_r = TokenBracketRight::make();
+            CHECK_THROWS_AS(tok_r->get_int(), CompilerError);
+            CHECK_THROWS_AS(tok_r->get_string(), CompilerError);
+        }
+    }
+
+    SUBCASE("throw when data is of a different type")
+    {
+        SUBCASE("TokenSpecialForm")
+        {
+            auto tok = TokenSpecialForm::make("@potato");
+            CHECK_THROWS_AS(tok->get_int(), CompilerError);
+        }
+
+        SUBCASE("TokenInteger")
+        {
+            auto tok = TokenInteger::make(42);
+            CHECK_THROWS_AS(tok->get_string(), CompilerError);
+        }
+
+        SUBCASE("TokenIdentifier")
+        {
+            auto tok = TokenIdentifier::make("potato");
+            CHECK_THROWS_AS(tok->get_int(), CompilerError);
+        }
+    }
+
+    SUBCASE("work when data is of the correct type")
+    {
+        SUBCASE("TokenSpecialForm")
+        {
+            auto tok = TokenSpecialForm::make("@potato");
+            CHECK_EQ(tok->get_string(), "@potato");
+        }
+
+        SUBCASE("TokenInteger")
+        {
+            auto tok = TokenInteger::make(42);
+            CHECK_EQ(tok->get_int(), 42);
+        }
+
+        SUBCASE("TokenIdentifier")
+        {
+            auto tok = TokenIdentifier::make("potato");
+            CHECK_EQ(tok->get_string(), "potato");
+        }
     }
 }
 
@@ -60,18 +145,25 @@ TEST_CASE("TokenMatcher")
         CHECK_EQ(tok_r->kind, TokenKind::bracket_right);
     }
 
+    SUBCASE("special form")
+    {
+        auto tok = matcher.match("@i-am-special");
+        CHECK_EQ(tok->kind, TokenKind::special_form);
+        CHECK_EQ(tok->get_string(), "@i-am-special");
+    }
+
     SUBCASE("integer")
     {
         auto tok = matcher.match("42");
         CHECK_EQ(tok->kind, TokenKind::integer);
-        CHECK_EQ(dynamic_cast<TokenInteger*>(tok.get())->value(), 42);
+        CHECK_EQ(tok->get_int(), 42);
     }
 
     SUBCASE("identifier")
     {
         auto tok = matcher.match("identifier?");
         CHECK_EQ(tok->kind, TokenKind::identifier);
-        CHECK_EQ(dynamic_cast<TokenIdentifier*>(tok.get())->value(), "identifier?");
+        CHECK_EQ(tok->get_string(), "identifier?");
     }
 
     SUBCASE("throws on broken identifiers") {

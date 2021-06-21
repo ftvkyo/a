@@ -7,6 +7,14 @@ Token::Token(TokenKind kind) :
     kind(kind)
 {}
 
+int Token::get_int() {
+    throw CompilerError();
+}
+
+std::string Token::get_string() {
+    throw CompilerError();
+}
+
 Token::~Token() = default;
 
 
@@ -14,12 +22,12 @@ TokenEof::TokenEof() :
     Token(TokenKind::eof)
 {}
 
-UPToken TokenEof::make() {
-    return std::unique_ptr<TokenEof>(new TokenEof());
+pToken TokenEof::make() {
+    return pToken(new TokenEof());
 }
 
-std::string TokenEof::format() {
-    return "eof";
+void TokenEof::inspect(std::ostream* out) {
+    *out << "eof";
 }
 
 
@@ -27,12 +35,12 @@ TokenBracketLeft::TokenBracketLeft() :
     Token(TokenKind::bracket_left)
 {}
 
-UPToken TokenBracketLeft::make() {
-    return std::unique_ptr<TokenBracketLeft>(new TokenBracketLeft());
+pToken TokenBracketLeft::make() {
+    return pToken(new TokenBracketLeft());
 }
 
-std::string TokenBracketLeft::format() {
-    return "(";
+void TokenBracketLeft::inspect(std::ostream* out) {
+    *out << "(";
 }
 
 
@@ -40,12 +48,30 @@ TokenBracketRight::TokenBracketRight() :
     Token(TokenKind::bracket_right)
 {}
 
-UPToken TokenBracketRight::make() {
-    return std::unique_ptr<TokenBracketRight>(new TokenBracketRight());
+pToken TokenBracketRight::make() {
+    return pToken(new TokenBracketRight());
 }
 
-std::string TokenBracketRight::format() {
-    return ")";
+void TokenBracketRight::inspect(std::ostream* out) {
+    *out << ")";
+}
+
+
+TokenSpecialForm::TokenSpecialForm(std::string&& s) :
+    Token(TokenKind::special_form),
+    val(s)
+{}
+
+pToken TokenSpecialForm::make(std::string&& s) {
+    return pToken(new TokenSpecialForm(std::move(s)));
+}
+
+std::string TokenSpecialForm::get_string() {
+    return val;
+}
+
+void TokenSpecialForm::inspect(std::ostream* out) {
+    *out << "sf:" << val;
 }
 
 
@@ -54,36 +80,34 @@ TokenInteger::TokenInteger(int i) :
     val(i)
 {}
 
-UPToken TokenInteger::make(int i) {
-    return std::unique_ptr<TokenInteger>(new TokenInteger(i));
+pToken TokenInteger::make(int i) {
+    return pToken(new TokenInteger(i));
 }
 
-std::string TokenInteger::format() {
-    std::stringstream ss;
-    ss << "int:" << val;
-    return ss.str();
-}
-
-int TokenInteger::value() {
+int TokenInteger::get_int() {
     return val;
 }
 
+void TokenInteger::inspect(std::ostream* out) {
+    *out << "int:" << val;
+}
 
-TokenIdentifier::TokenIdentifier(std::string s) :
+
+TokenIdentifier::TokenIdentifier(std::string&& s) :
     Token(TokenKind::identifier),
     val(s)
 {}
 
-UPToken TokenIdentifier::make(std::string s) {
-    return std::unique_ptr<TokenIdentifier>(new TokenIdentifier(s));
+pToken TokenIdentifier::make(std::string&& s) {
+    return pToken(new TokenIdentifier(std::move(s)));
 }
 
-std::string TokenIdentifier::format() {
-    return "id:" + val;
-}
-
-std::string TokenIdentifier::value() {
+std::string TokenIdentifier::get_string() {
     return val;
+}
+
+void TokenIdentifier::inspect(std::ostream* out) {
+    *out << "id:" << val;
 }
 
 
@@ -94,7 +118,7 @@ TokenMatcher::TokenMatcher() {
     // and returned nullopt.
 
     token_matches.emplace_back(
-        [](std::string s) -> std::optional<UPToken> {
+        [](std::string s) -> std::optional<pToken> {
             if(s != "(") {
                 return std::nullopt;
             }
@@ -103,7 +127,7 @@ TokenMatcher::TokenMatcher() {
     );
 
     token_matches.emplace_back(
-        [](std::string s) -> std::optional<UPToken> {
+        [](std::string s) -> std::optional<pToken> {
             if(s != ")") {
                 return std::nullopt;
             }
@@ -112,9 +136,23 @@ TokenMatcher::TokenMatcher() {
     );
 
     token_matches.emplace_back(
-        [](std::string s) -> std::optional<UPToken> {
-            for(auto it = s.begin(); it < s.end(); it++) {
-                if(not std::isdigit(*it)) {
+        [](std::string s) -> std::optional<pToken> {
+            if(not s.starts_with("@")) {
+                return std::nullopt;
+            }
+            for(auto c : s) {
+                if(not isascii(c) or not std::isgraph(c)) {
+                    return std::nullopt;
+                }
+            }
+            return {TokenSpecialForm::make(std::move(s))};
+        }
+    );
+
+    token_matches.emplace_back(
+        [](std::string s) -> std::optional<pToken> {
+            for(auto c : s) {
+                if(not std::isdigit(c)) {
                     return std::nullopt;
                 }
             }
@@ -128,19 +166,19 @@ TokenMatcher::TokenMatcher() {
     );
 
     token_matches.emplace_back(
-        [](std::string s) -> std::optional<UPToken> {
-            for(auto it = s.begin(); it < s.end(); it++) {
-                if(not isascii(*it) or not std::isgraph(*it)) {
+        [](std::string s) -> std::optional<pToken> {
+            for(auto c : s) {
+                if(not isascii(c) or not std::isgraph(c)) {
                     return std::nullopt;
                 }
             }
-            return {TokenIdentifier::make(s)};
+            return {TokenIdentifier::make(std::move(s))};
         }
     );
 }
 
 
-UPToken TokenMatcher::match(std::string token) {
+pToken TokenMatcher::match(std::string&& token) {
     // we don't expect any empty strings here -- whitespace should be
     // filtered out, eof should not go here, so getting it would
     // mean there is a bug in the calling code.
@@ -148,8 +186,8 @@ UPToken TokenMatcher::match(std::string token) {
         throw CompilerError();
     }
 
-    for(auto it = token_matches.begin(); it < token_matches.end(); it++) {
-        std::optional<UPToken> res = (*it)(token);
+    for(auto it : token_matches) {
+        std::optional<pToken> res = it(token);
         if(res != std::nullopt) {
             // Early return to be sure that only one lambda actually
             // produces a value.
