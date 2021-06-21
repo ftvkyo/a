@@ -6,11 +6,23 @@
 #include "token2ast.hpp"
 
 
+/**
+ * Parses tokens into an AST.
+ */
 class Parser {
 public:
 
     Parser();
 
+    /**
+     * Parse tokens and return the AST if it was successful.
+     *
+     * @throws If tokens can't be parsed.
+     *
+     * @param tokens Tokens to parse.
+     *
+     * @returns AST generated from the tokens.
+     */
     pAst parse(std::vector<pToken>&& tokens);
 
 private:
