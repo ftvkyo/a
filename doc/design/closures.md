@@ -8,7 +8,7 @@ and any runtime interpreter for them. Instead, everything is translated
 into LLVM IR.
 
 There can be added some runtime to add better support for functional-style
-things like first class functions.
+things like closures.
 
 It's possible to validate variable scopes in compile time, so looks like
 the only thing we need to find a solution for is how we should implement
@@ -58,13 +58,13 @@ because we should support creation of multiple `fun`s.
 
 That's probably a pretty obvious solution, but I suggest adding a special type
 of value that works as a wrapper for functions, storing their captured
-variables. All functions will have such wrapper, it's just for functions
-that don't reference variables the wrapper will be empty.
+variables. All functions will have such wrapper, for functions that don't
+reference variables the wrapper will be empty.
 This means that we can't __construct__ new functions in runtime, but we can
 create as many functions _similar_ to existing ones using different captured
 values.
 
-Pseudo-code of what the wrapper is:
+Let's say the wrapper is something like this (pseudo-code):
 ```
 struct Function {
     Implementation* function_pointer;
@@ -72,9 +72,9 @@ struct Function {
     vector<Value> captured_values;
     Type return_type;
 };
+```
 
-# Then
-
+```
 (define (mk_fun num)
     (define (fun x)
         (+ x n)
@@ -82,13 +82,14 @@ struct Function {
     fun
 )
 
-# would return
-# Function {
-#     function_pointer = fun,
-#     argument_types = {int},
-#     captured_values = {value of num},
-#     return_type = int,
-# };
+(mk_fun 3) -> a
+
+a -> Function {
+    function_pointer = fun,
+    argument_types = {int},
+    captured_values = {value of num},
+    return_type = int,
+};
 ```
 
 Another example:

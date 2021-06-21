@@ -49,21 +49,21 @@ bad and also is used in the division operator.
 # Possible implementation of the `define` special form
 
 ```
-  (print 20)
+(print 20)
 
-  (define x 10)
+(define x 10)
 
-  (print x)
+(print x)
 ```
 
-Converting with: `define x y -> let x y with the rest as the body`
+Converting using this rule: `(define x y) ... -> (let (x y) ...)`
 
 We get this:
 ```
-  (print 20)
+(print 20)
 
-  (let [x 10]
+(let [x 10]
 
-    (print x)
-  )
+  (print x)
+)
 ```
