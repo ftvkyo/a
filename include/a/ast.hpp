@@ -4,13 +4,32 @@
 #include <memory>
 
 
+/**
+ * Different kinds of AST nodes we have.
+ */
 enum class AstKind {
+    /**
+     * A sequence of other AST nodes.
+     * For example, "(a b)" is:
+     *  seq
+     *  / \
+     * a   b
+     */
     sequence,
 
+    /**
+     * A leaf node that is a name of a special form.
+     */
     special_form,
 
+    /**
+     * A leaf node that is an integer value.
+     */
     integer,
 
+    /**
+     * A leaf node that is an identifier.
+     */
     identifier,
 };
 
@@ -18,20 +37,65 @@ enum class AstKind {
 class AstExpression;
 
 
+/**
+ * For polymorphism, we use AstExpression only as a pointer.
+ */
 typedef std::shared_ptr<AstExpression> pAst;
 
 
+/**
+ * Represents a single AST node potentially with subnodes.
+ * This one is abstract, intended to be used with smart pointers.
+ * Actual AST nodes inherit from this class.
+ */
 class AstExpression {
 public:
 
+    /**
+     * Getter for the kind of the AST node.
+     *
+     * @returns kind of the node.
+     */
     AstKind get_kind();
 
+    /**
+     * Generate a pretty representation of this AST node
+     * including potential subnodes.
+     *
+     * @param output Where to put the pretty thing into.
+     */
     virtual void inspect(std::ostream* output) = 0;
 
+    /**
+     * Get the stored sequence of AST nodes if it exists in the object.
+     * Throw otherwise.
+     *
+     * @throws When there's no sequence in the object.
+     *
+     * @returns Stored sequence of AST nodes.
+     */
     virtual std::vector<pAst> retrieve_seq();
 
+    /**
+     * Get the stored integer value if it exists in the object.
+     * Throw otherwise.
+     *
+     * @throws When there's no int in the object.
+     *
+     * @returns Stored integer.
+     */
     virtual int retrieve_int();
 
+    /**
+     * Get the stored symbol if it exists in the object.
+     * Throw otherwise.
+     *
+     * @note symbol is, for example, a name of an identifier or a special form.
+     *
+     * @throws When there's no symbol in the object.
+     *
+     * @returns Stored symbol.
+     */
     virtual std::string retrieve_symbol();
 
     /*
@@ -43,10 +107,18 @@ public:
 
 protected:
 
+    /**
+     * Hidden constructor to reference from children to set the kind.
+     *
+     * Each child has a factory method for its creation.
+     */
     AstExpression(AstKind kind);
 
 private:
 
+    /**
+     * Kind of this AST node.
+     */
     AstKind kind;
 };
 

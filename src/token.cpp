@@ -70,12 +70,12 @@ pToken TokenSpecialForm::make(std::string&& s) {
     return pToken(new TokenSpecialForm(std::move(s)));
 }
 
-std::string TokenSpecialForm::retrieve_symbol() {
-    return val;
-}
-
 void TokenSpecialForm::inspect(std::ostream* out) {
     *out << "sf:" << val;
+}
+
+std::string TokenSpecialForm::retrieve_symbol() {
+    return val;
 }
 
 
@@ -88,12 +88,12 @@ pToken TokenInteger::make(int i) {
     return pToken(new TokenInteger(i));
 }
 
-int TokenInteger::retrieve_int() {
-    return val;
-}
-
 void TokenInteger::inspect(std::ostream* out) {
     *out << "int:" << val;
+}
+
+int TokenInteger::retrieve_int() {
+    return val;
 }
 
 
@@ -106,12 +106,12 @@ pToken TokenIdentifier::make(std::string&& s) {
     return pToken(new TokenIdentifier(std::move(s)));
 }
 
-std::string TokenIdentifier::retrieve_symbol() {
-    return val;
-}
-
 void TokenIdentifier::inspect(std::ostream* out) {
     *out << "id:" << val;
+}
+
+std::string TokenIdentifier::retrieve_symbol() {
+    return val;
 }
 
 

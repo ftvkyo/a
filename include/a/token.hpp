@@ -37,24 +37,48 @@ enum class TokenKind {
 
 
 /**
- * Represents a token. This one is abstract, intended to be used
- * with smart pointers. Actual tokens will inherit from this class.
+ * Represents a single token.
+ * This one is abstract, intended to be used with smart pointers.
+ * Actual tokens inherit from this class.
  */
 class Token {
 public:
 
+    /**
+     * Getter for the kind of the token.
+     *
+     * @returns kind of the token.
+     */
     TokenKind get_kind();
 
-    virtual int retrieve_int();
-
-    virtual std::string retrieve_symbol();
-
     /**
-     * Get a pretty representation of this token.
+     * Generate a pretty representation of this token.
      *
      * @param out Where to put the pretty thing into.
      */
-    virtual void inspect(std::ostream* out) = 0;
+    virtual void inspect(std::ostream* output) = 0;
+
+    /**
+     * Get the stored integer value if it exists in the object.
+     * Throw otherwise.
+     *
+     * @throws When there's no int in the object.
+     *
+     * @returns Stored integer.
+     */
+    virtual int retrieve_int();
+
+    /**
+     * Get the stored symbol if it exists in the object.
+     * Throw otherwise.
+     *
+     * @note symbol is, for example, a name of an identifier or a special form.
+     *
+     * @throws When there's no symbol in the object.
+     *
+     * @returns Stored symbol.
+     */
+    virtual std::string retrieve_symbol();
 
     virtual ~Token() = 0;
 
@@ -63,7 +87,7 @@ protected:
     /**
      * Hidden constructor to reference from children to set the kind.
      *
-     * Each child has a factory method for its UpToken creation.
+     * Each child has a factory method for its creation.
      */
     Token(TokenKind kind);
 
@@ -77,8 +101,7 @@ private:
 
 
 /**
- * For the sake of polymorphism, we wrap Token into a shared_ptr.
- * It's just too difficult to type.
+ * For polymorphism, we use Token only as a pointer.
  */
 typedef std::shared_ptr<Token> pToken;
 
@@ -87,7 +110,7 @@ struct TokenEof : public Token {
 public:
     static pToken make();
 
-    virtual void inspect(std::ostream* out) override;
+    virtual void inspect(std::ostream* output) override;
 
 private:
     TokenEof();
@@ -98,7 +121,7 @@ struct TokenBracketLeft : public Token {
 public:
     static pToken make();
 
-    virtual void inspect(std::ostream* out) override;
+    virtual void inspect(std::ostream* output) override;
 
 private:
     TokenBracketLeft();
@@ -109,7 +132,7 @@ struct TokenBracketRight : public Token {
 public:
     static pToken make();
 
-    virtual void inspect(std::ostream* out) override;
+    virtual void inspect(std::ostream* output) override;
 
 private:
     TokenBracketRight();
@@ -120,9 +143,9 @@ struct TokenSpecialForm : public Token {
 public:
     static pToken make(std::string&& s);
 
-    virtual std::string retrieve_symbol() override;
+    virtual void inspect(std::ostream* output) override;
 
-    virtual void inspect(std::ostream* out) override;
+    virtual std::string retrieve_symbol() override;
 
 private:
     TokenSpecialForm(std::string&& s);
@@ -134,9 +157,9 @@ struct TokenInteger : public Token {
 public:
     static pToken make(int i);
 
-    virtual int retrieve_int() override;
-
     virtual void inspect(std::ostream* out) override;
+
+    virtual int retrieve_int() override;
 
 private:
     TokenInteger(int i);
@@ -148,9 +171,9 @@ struct TokenIdentifier : public Token {
 public:
     static pToken make(std::string&& s);
 
-    virtual std::string retrieve_symbol() override;
-
     virtual void inspect(std::ostream* out) override;
+
+    virtual std::string retrieve_symbol() override;
 
 private:
     TokenIdentifier(std::string&& s);
