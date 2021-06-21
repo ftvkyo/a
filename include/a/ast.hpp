@@ -4,7 +4,7 @@
 #include <memory>
 
 
-enum class AstNodeKind {
+enum class AstKind {
     sequence,
 
     special_form,
@@ -15,78 +15,70 @@ enum class AstNodeKind {
 };
 
 
-class ExprAstNode {
+class AstExpression {
 public:
 
-    AstNodeKind kind;
+    AstKind kind;
 
     virtual void inspect(std::ostream* output) = 0;
 
-    virtual ~ExprAstNode() = 0;
+    virtual ~AstExpression() = 0;
 
 protected:
-    ExprAstNode(AstNodeKind kind);
+    AstExpression(AstKind kind);
 };
 
 
-typedef std::unique_ptr<ExprAstNode> UpExprAstNode;
+typedef std::shared_ptr<AstExpression> pAst;
 
 
-class SeqAstNode : public ExprAstNode {
+class AstSequence : public AstExpression {
 public:
-    static UpExprAstNode make(std::vector<UpExprAstNode>&& seq);
+    static pAst make(std::vector<pAst>&& seq);
 
     virtual void inspect(std::ostream* output);
 
-    friend std::unique_ptr<SeqAstNode> std::make_unique<SeqAstNode>(std::vector<UpExprAstNode>&&);
-
 protected:
-    SeqAstNode(std::vector<UpExprAstNode>&& seq);
+    AstSequence(std::vector<pAst>&& seq);
 
-    std::vector<UpExprAstNode> seq;
+    std::vector<pAst> seq;
 };
 
 
-class SpecialFormAstNode : public ExprAstNode {
+class AstSpecialForm : public AstExpression {
 public:
-    static UpExprAstNode make(std::string&& val);
+    static pAst make(std::string&& val);
 
     virtual void inspect(std::ostream* output);
 
-    friend std::unique_ptr<SpecialFormAstNode> std::make_unique<SpecialFormAstNode>(std::string&&);
-
 protected:
-    SpecialFormAstNode(std::string&& val);
+    AstSpecialForm(std::string&& val);
 
     std::string val;
 };
 
 
-class IntegerAstNode : public ExprAstNode {
+class AstInteger : public AstExpression {
 public:
-    static UpExprAstNode make(int val);
+    static pAst make(int val);
 
     virtual void inspect(std::ostream* output);
 
-    friend std::unique_ptr<IntegerAstNode> std::make_unique<IntegerAstNode>(int&);
-
 protected:
-    IntegerAstNode(int val);
+    AstInteger(int val);
 
     int val;
 };
 
 
-class IdentifierAstNode : public ExprAstNode {
+class AstIdentifier : public AstExpression {
 public:
-    static UpExprAstNode make(std::string&& val);
+    static pAst make(std::string&& val);
 
     virtual void inspect(std::ostream* output);
 
-    friend std::unique_ptr<IdentifierAstNode> std::make_unique<IdentifierAstNode>(std::string&&);
-
 protected:
-    IdentifierAstNode(std::string&& val);
+    AstIdentifier(std::string&& val);
 
     std::string val;
 };

@@ -22,8 +22,8 @@ TokenEof::TokenEof() :
     Token(TokenKind::eof)
 {}
 
-UpToken TokenEof::make() {
-    return std::make_unique<TokenEof>();
+pToken TokenEof::make() {
+    return pToken(new TokenEof());
 }
 
 void TokenEof::inspect(std::ostream* out) {
@@ -35,8 +35,8 @@ TokenBracketLeft::TokenBracketLeft() :
     Token(TokenKind::bracket_left)
 {}
 
-UpToken TokenBracketLeft::make() {
-    return std::make_unique<TokenBracketLeft>();
+pToken TokenBracketLeft::make() {
+    return pToken(new TokenBracketLeft());
 }
 
 void TokenBracketLeft::inspect(std::ostream* out) {
@@ -48,8 +48,8 @@ TokenBracketRight::TokenBracketRight() :
     Token(TokenKind::bracket_right)
 {}
 
-UpToken TokenBracketRight::make() {
-    return std::make_unique<TokenBracketRight>();
+pToken TokenBracketRight::make() {
+    return pToken(new TokenBracketRight());
 }
 
 void TokenBracketRight::inspect(std::ostream* out) {
@@ -62,8 +62,8 @@ TokenSpecialForm::TokenSpecialForm(std::string&& s) :
     val(s)
 {}
 
-UpToken TokenSpecialForm::make(std::string&& s) {
-    return std::make_unique<TokenSpecialForm>(std::move(s));
+pToken TokenSpecialForm::make(std::string&& s) {
+    return pToken(new TokenSpecialForm(std::move(s)));
 }
 
 std::string TokenSpecialForm::get_string() {
@@ -80,8 +80,8 @@ TokenInteger::TokenInteger(int i) :
     val(i)
 {}
 
-UpToken TokenInteger::make(int i) {
-    return std::make_unique<TokenInteger>(i);
+pToken TokenInteger::make(int i) {
+    return pToken(new TokenInteger(i));
 }
 
 int TokenInteger::get_int() {
@@ -98,8 +98,8 @@ TokenIdentifier::TokenIdentifier(std::string&& s) :
     val(s)
 {}
 
-UpToken TokenIdentifier::make(std::string&& s) {
-    return std::make_unique<TokenIdentifier>(std::move(s));
+pToken TokenIdentifier::make(std::string&& s) {
+    return pToken(new TokenIdentifier(std::move(s)));
 }
 
 std::string TokenIdentifier::get_string() {
@@ -118,7 +118,7 @@ TokenMatcher::TokenMatcher() {
     // and returned nullopt.
 
     token_matches.emplace_back(
-        [](std::string s) -> std::optional<UpToken> {
+        [](std::string s) -> std::optional<pToken> {
             if(s != "(") {
                 return std::nullopt;
             }
@@ -127,7 +127,7 @@ TokenMatcher::TokenMatcher() {
     );
 
     token_matches.emplace_back(
-        [](std::string s) -> std::optional<UpToken> {
+        [](std::string s) -> std::optional<pToken> {
             if(s != ")") {
                 return std::nullopt;
             }
@@ -136,7 +136,7 @@ TokenMatcher::TokenMatcher() {
     );
 
     token_matches.emplace_back(
-        [](std::string s) -> std::optional<UpToken> {
+        [](std::string s) -> std::optional<pToken> {
             if(not s.starts_with("@")) {
                 return std::nullopt;
             }
@@ -150,7 +150,7 @@ TokenMatcher::TokenMatcher() {
     );
 
     token_matches.emplace_back(
-        [](std::string s) -> std::optional<UpToken> {
+        [](std::string s) -> std::optional<pToken> {
             for(auto c : s) {
                 if(not std::isdigit(c)) {
                     return std::nullopt;
@@ -166,7 +166,7 @@ TokenMatcher::TokenMatcher() {
     );
 
     token_matches.emplace_back(
-        [](std::string s) -> std::optional<UpToken> {
+        [](std::string s) -> std::optional<pToken> {
             for(auto c : s) {
                 if(not isascii(c) or not std::isgraph(c)) {
                     return std::nullopt;
@@ -178,7 +178,7 @@ TokenMatcher::TokenMatcher() {
 }
 
 
-UpToken TokenMatcher::match(std::string&& token) {
+pToken TokenMatcher::match(std::string&& token) {
     // we don't expect any empty strings here -- whitespace should be
     // filtered out, eof should not go here, so getting it would
     // mean there is a bug in the calling code.
@@ -187,7 +187,7 @@ UpToken TokenMatcher::match(std::string&& token) {
     }
 
     for(auto it : token_matches) {
-        std::optional<UpToken> res = it(token);
+        std::optional<pToken> res = it(token);
         if(res != std::nullopt) {
             // Early return to be sure that only one lambda actually
             // produces a value.

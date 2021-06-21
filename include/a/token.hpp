@@ -73,19 +73,17 @@ protected:
 
 
 /**
- * For the sake of polymorphism, we wrap Token into a unique_ptr.
+ * For the sake of polymorphism, we wrap Token into a shared_ptr.
  * It's just too difficult to type.
  */
-typedef std::unique_ptr<Token> UpToken;
+typedef std::shared_ptr<Token> pToken;
 
 
 struct TokenEof : public Token {
 public:
-    static UpToken make();
+    static pToken make();
 
     virtual void inspect(std::ostream* out) override;
-
-    friend std::unique_ptr<TokenEof> std::make_unique<TokenEof>();
 
 private:
     TokenEof();
@@ -94,11 +92,9 @@ private:
 
 struct TokenBracketLeft : public Token {
 public:
-    static UpToken make();
+    static pToken make();
 
     virtual void inspect(std::ostream* out) override;
-
-    friend std::unique_ptr<TokenBracketLeft> std::make_unique<TokenBracketLeft>();
 
 private:
     TokenBracketLeft();
@@ -107,11 +103,9 @@ private:
 
 struct TokenBracketRight : public Token {
 public:
-    static UpToken make();
+    static pToken make();
 
     virtual void inspect(std::ostream* out) override;
-
-    friend std::unique_ptr<TokenBracketRight> std::make_unique<TokenBracketRight>();
 
 private:
     TokenBracketRight();
@@ -120,13 +114,11 @@ private:
 
 struct TokenSpecialForm : public Token {
 public:
-    static UpToken make(std::string&& s);
+    static pToken make(std::string&& s);
 
     virtual std::string get_string() override;
 
     virtual void inspect(std::ostream* out) override;
-
-    friend std::unique_ptr<TokenSpecialForm> std::make_unique<TokenSpecialForm>(std::string&&);
 
 private:
     TokenSpecialForm(std::string&& s);
@@ -136,13 +128,11 @@ private:
 
 struct TokenInteger : public Token {
 public:
-    static UpToken make(int i);
+    static pToken make(int i);
 
     virtual int get_int() override;
 
     virtual void inspect(std::ostream* out) override;
-
-    friend std::unique_ptr<TokenInteger> std::make_unique<TokenInteger>(int&);
 
 private:
     TokenInteger(int i);
@@ -152,13 +142,11 @@ private:
 
 struct TokenIdentifier : public Token {
 public:
-    static UpToken make(std::string&& s);
+    static pToken make(std::string&& s);
 
     virtual std::string get_string() override;
 
     virtual void inspect(std::ostream* out) override;
-
-    friend std::unique_ptr<TokenIdentifier> std::make_unique<TokenIdentifier>(std::string&&);
 
 private:
     TokenIdentifier(std::string&& s);
@@ -181,13 +169,13 @@ public:
      *
      * @returns Result of conversion.
      */
-    UpToken match(std::string&& token);
+    pToken match(std::string&& token);
 
 private:
 
     typedef std::vector<
         std::function<
-            std::optional<UpToken>(std::string)
+            std::optional<pToken>(std::string)
         >
     > TokenMatches;
 

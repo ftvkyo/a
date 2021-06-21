@@ -11,17 +11,17 @@ public:
 
     TokenToAst();
 
-    TokenToAst& operator<<(UpToken&& token);
+    TokenToAst& operator<<(pToken&& token);
 
-    TokenToAst& operator<<(UpExprAstNode&& ast_node);
+    TokenToAst& operator<<(pAst&& ast_node);
 
     void operator>>(TokenToAst& receiver);
 
-    UpExprAstNode extract();
+    pAst extract();
 
 private:
 
-    std::vector<std::variant<UpToken, UpExprAstNode>> stack;
+    std::vector<std::variant<pToken, pAst>> stack;
 };
 
 
@@ -30,7 +30,7 @@ public:
 
     Parser();
 
-    UpExprAstNode parse(std::vector<UpToken>&& tokens);
+    pAst parse(std::vector<pToken>&& tokens);
 
 private:
 

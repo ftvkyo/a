@@ -1,23 +1,23 @@
 #include "a/ast.hpp"
 
 
-ExprAstNode::ExprAstNode(AstNodeKind kind) :
+AstExpression::AstExpression(AstKind kind) :
     kind(kind)
 {}
 
-ExprAstNode::~ExprAstNode() = default;
+AstExpression::~AstExpression() = default;
 
 
-SeqAstNode::SeqAstNode(std::vector<UpExprAstNode>&& seq) :
-    ExprAstNode(AstNodeKind::sequence),
+AstSequence::AstSequence(std::vector<pAst>&& seq) :
+    AstExpression(AstKind::sequence),
     seq(std::move(seq))
 {}
 
-UpExprAstNode SeqAstNode::make(std::vector<UpExprAstNode>&& seq) {
-    return std::make_unique<SeqAstNode>(std::move(seq));
+pAst AstSequence::make(std::vector<pAst>&& seq) {
+    return pAst(new AstSequence(std::move(seq)));
 }
 
-void SeqAstNode::inspect(std::ostream* out) {
+void AstSequence::inspect(std::ostream* out) {
     *out << "(";
 
     if(seq.size() > 0) {
@@ -35,43 +35,43 @@ void SeqAstNode::inspect(std::ostream* out) {
 }
 
 
-SpecialFormAstNode::SpecialFormAstNode(std::string&& val) :
-    ExprAstNode(AstNodeKind::special_form),
+AstSpecialForm::AstSpecialForm(std::string&& val) :
+    AstExpression(AstKind::special_form),
     val(val)
 {}
 
-UpExprAstNode SpecialFormAstNode::make(std::string&& val) {
-    return std::make_unique<SpecialFormAstNode>(std::move(val));
+pAst AstSpecialForm::make(std::string&& val) {
+    return pAst(new AstSpecialForm(std::move(val)));
 }
 
-void SpecialFormAstNode::inspect(std::ostream* out) {
+void AstSpecialForm::inspect(std::ostream* out) {
     *out << val;
 }
 
 
-IntegerAstNode::IntegerAstNode(int val) :
-    ExprAstNode(AstNodeKind::integer),
+AstInteger::AstInteger(int val) :
+    AstExpression(AstKind::integer),
     val(val)
 {}
 
-UpExprAstNode IntegerAstNode::make(int val) {
-    return std::make_unique<IntegerAstNode>(val);
+pAst AstInteger::make(int val) {
+    return pAst(new AstInteger(val));
 }
 
-void IntegerAstNode::inspect(std::ostream* out) {
+void AstInteger::inspect(std::ostream* out) {
     *out << val;
 }
 
 
-IdentifierAstNode::IdentifierAstNode(std::string&& val) :
-    ExprAstNode(AstNodeKind::identifier),
+AstIdentifier::AstIdentifier(std::string&& val) :
+    AstExpression(AstKind::identifier),
     val(val)
 {}
 
-UpExprAstNode IdentifierAstNode::make(std::string&& val) {
-    return std::make_unique<IdentifierAstNode>(std::move(val));
+pAst AstIdentifier::make(std::string&& val) {
+    return pAst(new AstIdentifier(std::move(val)));
 }
 
-void IdentifierAstNode::inspect(std::ostream* out) {
+void AstIdentifier::inspect(std::ostream* out) {
     *out << val;
 }
