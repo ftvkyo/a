@@ -5,7 +5,7 @@ TokenToAst::TokenToAst() = default;
 
 
 TokenToAst& TokenToAst::operator<<(pToken&& token) {
-    switch(token->kind) {
+    switch(token->get_kind()) {
         case TokenKind::bracket_left:
         case TokenKind::bracket_right:
         case TokenKind::eof:
@@ -34,15 +34,15 @@ pAst TokenToAst::extract() {
         pAst ast_node;
         if(std::holds_alternative<pToken>(token)) {
             pToken tok = std::move(std::get<pToken>(token));
-            switch(tok->kind) {
+            switch(tok->get_kind()) {
             case TokenKind::special_form:
-                ast_node = AstSpecialForm::make(tok->get_string());
+                ast_node = AstSpecialForm::make(tok->retrieve_symbol());
                 break;
             case TokenKind::identifier:
-                ast_node = AstIdentifier::make(tok->get_string());
+                ast_node = AstIdentifier::make(tok->retrieve_symbol());
                 break;
             case TokenKind::integer:
-                ast_node = AstInteger::make(tok->get_int());
+                ast_node = AstInteger::make(tok->retrieve_int());
                 break;
             default:
                 throw CompilerError();
@@ -72,7 +72,7 @@ pAst Parser::parse(std::vector<pToken>&& tokens) {
     converters[0] << AstSpecialForm::make("@block");
 
     for(auto& tok : tokens) {
-        switch(tok->kind) {
+        switch(tok->get_kind()) {
         case TokenKind::bracket_left:
             depth++;
             if(depth >= converters.size()) {

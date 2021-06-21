@@ -16,7 +16,7 @@ std::vector<pToken> Lexer::tokenize(std::istream * const input) {
     // eof will also get put into the result vector
     do {
         pToken tok = get_next_token(input);
-        tk = tok->kind;
+        tk = tok->get_kind();
         result.emplace_back(std::move(tok));
     } while(tk != TokenKind::eof);
 

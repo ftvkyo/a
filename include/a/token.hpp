@@ -43,14 +43,11 @@ enum class TokenKind {
 class Token {
 public:
 
-    /**
-     * Kind of this token.
-     */
-    TokenKind kind;
+    TokenKind get_kind();
 
-    virtual int get_int();
+    virtual int retrieve_int();
 
-    virtual std::string get_string();
+    virtual std::string retrieve_symbol();
 
     /**
      * Get a pretty representation of this token.
@@ -69,6 +66,13 @@ protected:
      * Each child has a factory method for its UpToken creation.
      */
     Token(TokenKind kind);
+
+private:
+
+    /**
+     * Kind of this token.
+     */
+    TokenKind kind;
 };
 
 
@@ -116,7 +120,7 @@ struct TokenSpecialForm : public Token {
 public:
     static pToken make(std::string&& s);
 
-    virtual std::string get_string() override;
+    virtual std::string retrieve_symbol() override;
 
     virtual void inspect(std::ostream* out) override;
 
@@ -130,7 +134,7 @@ struct TokenInteger : public Token {
 public:
     static pToken make(int i);
 
-    virtual int get_int() override;
+    virtual int retrieve_int() override;
 
     virtual void inspect(std::ostream* out) override;
 
@@ -144,7 +148,7 @@ struct TokenIdentifier : public Token {
 public:
     static pToken make(std::string&& s);
 
-    virtual std::string get_string() override;
+    virtual std::string retrieve_symbol() override;
 
     virtual void inspect(std::ostream* out) override;
 

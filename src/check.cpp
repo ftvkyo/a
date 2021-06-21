@@ -9,15 +9,15 @@ void Checker::check(pAst &ast) {
 }
 
 void Checker::check_top_level(pAst &ast) {
-    bool isSeq = ast->kind == AstKind::sequence;
+    bool isSeq = ast->get_kind() == AstKind::sequence;
     if(!isSeq) {
         throw CompilerError();
     }
 
-    auto seq = ast->get_seq();
+    auto seq = ast->retrieve_seq();
     bool isBlock = seq.size() != 0
-        && seq[0]->kind == AstKind::special_form
-        && seq[0]->get_string() == "@block";
+        && seq[0]->get_kind() == AstKind::special_form
+        && seq[0]->retrieve_symbol() == "@block";
     if(!isBlock) {
         throw CompilerError();
     }

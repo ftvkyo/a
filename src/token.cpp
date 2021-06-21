@@ -7,11 +7,15 @@ Token::Token(TokenKind kind) :
     kind(kind)
 {}
 
-int Token::get_int() {
+TokenKind Token::get_kind() {
+    return kind;
+}
+
+int Token::retrieve_int() {
     throw CompilerError();
 }
 
-std::string Token::get_string() {
+std::string Token::retrieve_symbol() {
     throw CompilerError();
 }
 
@@ -66,7 +70,7 @@ pToken TokenSpecialForm::make(std::string&& s) {
     return pToken(new TokenSpecialForm(std::move(s)));
 }
 
-std::string TokenSpecialForm::get_string() {
+std::string TokenSpecialForm::retrieve_symbol() {
     return val;
 }
 
@@ -84,7 +88,7 @@ pToken TokenInteger::make(int i) {
     return pToken(new TokenInteger(i));
 }
 
-int TokenInteger::get_int() {
+int TokenInteger::retrieve_int() {
     return val;
 }
 
@@ -102,7 +106,7 @@ pToken TokenIdentifier::make(std::string&& s) {
     return pToken(new TokenIdentifier(std::move(s)));
 }
 
-std::string TokenIdentifier::get_string() {
+std::string TokenIdentifier::retrieve_symbol() {
     return val;
 }
 

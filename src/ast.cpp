@@ -5,15 +5,19 @@ AstExpression::AstExpression(AstKind kind) :
     kind(kind)
 {}
 
-std::vector<pAst> AstExpression::get_seq() {
+AstKind AstExpression::get_kind() {
+    return kind;
+}
+
+std::vector<pAst> AstExpression::retrieve_seq() {
     throw CompilerError();
 }
 
-int AstExpression::get_int() {
+int AstExpression::retrieve_int() {
     throw CompilerError();
 }
 
-std::string AstExpression::get_string() {
+std::string AstExpression::retrieve_symbol() {
     throw CompilerError();
 }
 
@@ -46,7 +50,7 @@ void AstSequence::inspect(std::ostream* out) {
     *out << ")";
 }
 
-std::vector<pAst> AstSequence::get_seq() {
+std::vector<pAst> AstSequence::retrieve_seq() {
     return seq;
 }
 
@@ -64,7 +68,7 @@ void AstSpecialForm::inspect(std::ostream* out) {
     *out << val;
 }
 
-std::string AstSpecialForm::get_string() {
+std::string AstSpecialForm::retrieve_symbol() {
     return val;
 }
 
@@ -82,7 +86,7 @@ void AstInteger::inspect(std::ostream* out) {
     *out << val;
 }
 
-int AstInteger::get_int() {
+int AstInteger::retrieve_int() {
     return val;
 }
 
@@ -100,6 +104,6 @@ void AstIdentifier::inspect(std::ostream* out) {
     *out << val;
 }
 
-std::string AstIdentifier::get_string() {
+std::string AstIdentifier::retrieve_symbol() {
     return val;
 }

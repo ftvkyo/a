@@ -24,20 +24,30 @@ typedef std::shared_ptr<AstExpression> pAst;
 class AstExpression {
 public:
 
-    AstKind kind;
+    AstKind get_kind();
 
     virtual void inspect(std::ostream* output) = 0;
 
-    virtual std::vector<pAst> get_seq();
+    virtual std::vector<pAst> retrieve_seq();
 
-    virtual int get_int();
+    virtual int retrieve_int();
 
-    virtual std::string get_string();
+    virtual std::string retrieve_symbol();
+
+    /*
+    // Future method for retrieving content of string values
+    virtual std::string retrieve_string();
+    */
 
     virtual ~AstExpression() = 0;
 
 protected:
+
     AstExpression(AstKind kind);
+
+private:
+
+    AstKind kind;
 };
 
 
@@ -47,7 +57,7 @@ public:
 
     virtual void inspect(std::ostream* output) override;
 
-    virtual std::vector<pAst> get_seq() override;
+    virtual std::vector<pAst> retrieve_seq() override;
 
 protected:
     AstSequence(std::vector<pAst>&& seq);
@@ -62,7 +72,7 @@ public:
 
     virtual void inspect(std::ostream* output) override;
 
-    virtual std::string get_string() override;
+    virtual std::string retrieve_symbol() override;
 
 protected:
     AstSpecialForm(std::string&& val);
@@ -77,7 +87,7 @@ public:
 
     virtual void inspect(std::ostream* output) override;
 
-    virtual int get_int() override;
+    virtual int retrieve_int() override;
 
 protected:
     AstInteger(int val);
@@ -92,7 +102,7 @@ public:
 
     virtual void inspect(std::ostream* output) override;
 
-    virtual std::string get_string() override;
+    virtual std::string retrieve_symbol() override;
 
 protected:
     AstIdentifier(std::string&& val);
