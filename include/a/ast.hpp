@@ -15,6 +15,12 @@ enum class AstKind {
 };
 
 
+class AstExpression;
+
+
+typedef std::shared_ptr<AstExpression> pAst;
+
+
 class AstExpression {
 public:
 
@@ -35,14 +41,11 @@ protected:
 };
 
 
-typedef std::shared_ptr<AstExpression> pAst;
-
-
 class AstSequence : public AstExpression {
 public:
     static pAst make(std::vector<pAst>&& seq);
 
-    virtual void inspect(std::ostream* output);
+    virtual void inspect(std::ostream* output) override;
 
     virtual std::vector<pAst> get_seq() override;
 
@@ -57,7 +60,7 @@ class AstSpecialForm : public AstExpression {
 public:
     static pAst make(std::string&& val);
 
-    virtual void inspect(std::ostream* output);
+    virtual void inspect(std::ostream* output) override;
 
     virtual std::string get_string() override;
 
@@ -72,7 +75,7 @@ class AstInteger : public AstExpression {
 public:
     static pAst make(int val);
 
-    virtual void inspect(std::ostream* output);
+    virtual void inspect(std::ostream* output) override;
 
     virtual int get_int() override;
 
@@ -87,7 +90,7 @@ class AstIdentifier : public AstExpression {
 public:
     static pAst make(std::string&& val);
 
-    virtual void inspect(std::ostream* output);
+    virtual void inspect(std::ostream* output) override;
 
     virtual std::string get_string() override;
 
