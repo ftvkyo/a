@@ -2,7 +2,7 @@
 
 #include <llvm/IR/IRBuilder.h>
 
-#include "ast.hpp"
+#include "a/s2-parsing/ast.hpp"
 
 
 class Emitter {

@@ -1,10 +1,10 @@
-#include "a.hpp"
+#include "a/prelude.hpp"
 
 
-TokenToAst::TokenToAst() = default;
+Token2Ast::Token2Ast() = default;
 
 
-TokenToAst& TokenToAst::operator<<(pToken&& token) {
+Token2Ast& Token2Ast::operator<<(pToken&& token) {
     switch(token->get_kind()) {
         case TokenKind::bracket_left:
         case TokenKind::bracket_right:
@@ -21,13 +21,13 @@ TokenToAst& TokenToAst::operator<<(pToken&& token) {
 }
 
 
-TokenToAst& TokenToAst::operator<<(pAst&& ast_node) {
+Token2Ast& Token2Ast::operator<<(pAst&& ast_node) {
     stack.emplace_back(std::move(ast_node));
     return *this;
 }
 
 
-pAst TokenToAst::extract() {
+pAst Token2Ast::extract() {
     std::vector<pAst> nodes;
     nodes.reserve(stack.size());
     for(auto&& token : stack) {
@@ -58,47 +58,6 @@ pAst TokenToAst::extract() {
 }
 
 
-void TokenToAst::operator>>(TokenToAst& receiver) {
+void Token2Ast::operator>>(Token2Ast& receiver) {
     receiver << this->extract();
-}
-
-
-Parser::Parser() = default;
-
-pAst Parser::parse(std::vector<pToken>&& tokens) {
-    std::vector<TokenToAst> converters(20);
-    size_t depth = 0;
-
-    converters[0] << AstSpecialForm::make("@block");
-
-    for(auto& tok : tokens) {
-        switch(tok->get_kind()) {
-        case TokenKind::bracket_left:
-            depth++;
-            if(depth >= converters.size()) {
-                converters.emplace_back();
-            }
-            break;
-        case TokenKind::bracket_right:
-            if(depth == 0) {
-                throw SyntaxError();
-            }
-            depth--;
-            converters[depth + 1] >> converters[depth];
-            break;
-        case TokenKind::special_form:
-        case TokenKind::identifier:
-        case TokenKind::integer:
-            converters[depth] << std::move(tok);
-        case TokenKind::eof:
-            // Not an attempt to leave the cycle
-            break;
-        }
-    }
-
-    if(depth != 0) {
-        throw SyntaxError();
-    }
-
-    return converters[0].extract();
 }
