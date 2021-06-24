@@ -11,19 +11,23 @@ int main() {
     Checker checker;
     Emitter emitter;
 
-    std::cout << "reading..." << std::endl;
+    std::clog << "👉 reading..." << std::endl;
     auto tokens = lexer.tokenize(&std::cin);
 
-    std::cout << "parsing..." << std::endl;
+    std::clog << "👉 parsing..." << std::endl;
     auto ast = parser.parse(std::move(tokens));
+    ast->inspect(&std::clog);
+    std::clog << std::endl;
 
-    std::cout << "verifying..."<< std::endl;
+    std::clog << "👉 verifying..."<< std::endl;
     checker.check(ast);
 
-    std::cout << "converting..." << std::endl;
+    std::clog << "👉 converting..." << std::endl;
     converter.convert(ast);
+    ast->inspect(&std::clog);
+    std::clog << std::endl;
 
-    std::cout << "emitting..." << std::endl;
+    std::clog << "👉 emitting..." << std::endl;
     emitter.feed(ast);
 
     emitter.print();
