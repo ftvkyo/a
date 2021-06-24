@@ -77,6 +77,26 @@ public:
     virtual std::vector<pAst> retrieve_seq();
 
     /**
+     * Get the size of the stored sequence of AST nodes if it exists
+     * in the object.
+     *
+     * @throws When there is no sequence in the object.
+     *
+     * @returns Size of the stored sequence of AST nodes.
+     */
+    virtual size_t retrieve_seq_s();
+
+    /**
+     * Get the i-th element of the stored sequence of AST nodes
+     * if it exists in the object.
+     *
+     * @throws When there is no sequence or the sequence is not long enough.
+     *
+     * @returns i-th element of the stored sequence of AST nodes.
+     */
+    virtual pAst retrieve_seq_i(size_t i);
+
+    /**
      * Get the stored integer value if it exists in the object.
      * Throw otherwise.
      *
@@ -130,6 +150,10 @@ public:
     virtual void inspect(std::ostream* output) override;
 
     virtual std::vector<pAst> retrieve_seq() override;
+
+    virtual size_t retrieve_seq_s() override;
+
+    virtual pAst retrieve_seq_i(size_t i) override;
 
 protected:
     AstSequence(std::vector<pAst>&& seq);

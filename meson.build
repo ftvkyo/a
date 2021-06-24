@@ -14,3 +14,5 @@ llvm = dependency(
 subdir('include')
 subdir('src')
 subdir('test')
+
+subdir('exe')

@@ -13,6 +13,15 @@ std::vector<pAst> AstExpression::retrieve_seq() {
     throw CompilerError();
 }
 
+size_t AstExpression::retrieve_seq_s() {
+    throw CompilerError();
+}
+
+pAst AstExpression::retrieve_seq_i(size_t i) {
+    (void) i;
+    throw CompilerError();
+}
+
 int AstExpression::retrieve_int() {
     throw CompilerError();
 }
@@ -52,6 +61,17 @@ void AstSequence::inspect(std::ostream* out) {
 
 std::vector<pAst> AstSequence::retrieve_seq() {
     return seq;
+}
+
+size_t AstSequence::retrieve_seq_s() {
+    return seq.size();
+}
+
+pAst AstSequence::retrieve_seq_i(size_t i) {
+    if(i >= seq.size()) {
+        throw CompilerError();
+    }
+    return seq[i];
 }
 
 

@@ -10,11 +10,21 @@ public:
 
     Emitter();
 
-    llvm::Value* emit(pAst ast);
+    void feed(pAst ast);
+
+    void print();
 
 private:
 
-    llvm::Value* log_error(std::string err);
+    llvm::Value* emit(pAst ast);
+
+    llvm::Value* emit_sequence(pAst ast);
+
+    llvm::Value* emit_special_form(pAst ast);
+
+    llvm::Value* emit_integer(pAst ast);
+
+    llvm::Value* emit_identifier(pAst ast);
 
     llvm::LLVMContext context;
     llvm::IRBuilder<> builder;

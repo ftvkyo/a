@@ -6,6 +6,11 @@ const char* CompilerError::what() const throw () {
 }
 
 
+const char* UnimplementedError::what() const throw () {
+    return "Unimplemented Error";
+}
+
+
 const char* SyntaxError::what() const throw () {
     return "Syntax Error";
 }
