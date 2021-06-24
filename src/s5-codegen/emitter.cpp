@@ -20,7 +20,7 @@ llvm::Value* Emitter::emit(pAst ast) {
     case AstKind::sequence:
         return emit_sequence(ast);
     case AstKind::special_form:
-        return emit_special_form(ast);
+        throw CompilerError();
     case AstKind::integer:
         return emit_integer(ast);
     case AstKind::identifier:
@@ -29,7 +29,31 @@ llvm::Value* Emitter::emit(pAst ast) {
 }
 
 llvm::Value* Emitter::emit_sequence(pAst ast) {
-    // for now, let's assume it's always a function call
+    if(ast->retrieve_seq_s() < 1) {
+        throw SyntaxError();
+    }
+
+    switch(ast->retrieve_seq_i(0)->get_kind()) {
+    case AstKind::sequence:
+    case AstKind::identifier:
+        return emit_sequence_function_call(ast);
+    case AstKind::special_form:
+        return emit_sequence_special_form(ast);
+    case AstKind::integer:
+        throw SyntaxError();
+    }
+}
+
+llvm::Value* Emitter::emit_sequence_special_form(pAst ast) {
+    (void) ast;
+    throw UnimplementedError();
+}
+
+llvm::Value* Emitter::emit_sequence_function_call(pAst ast) {
+    if(ast->retrieve_seq_i(0)->get_kind() == AstKind::sequence) {
+        throw UnimplementedError();
+    }
+
     std::string callee_name = ast->retrieve_seq_i(0)->retrieve_symbol();
     llvm::Function *callee_f = module->getFunction(callee_name);
     if(!callee_f) {
@@ -44,11 +68,6 @@ llvm::Value* Emitter::emit_sequence(pAst ast) {
     }
 
     return builder.CreateCall(callee_f, args, "calltmp");
-}
-
-llvm::Value* Emitter::emit_special_form(pAst ast) {
-    (void) ast;
-    throw UnimplementedError();
 }
 
 llvm::Value* Emitter::emit_integer(pAst ast) {

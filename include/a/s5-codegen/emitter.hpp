@@ -20,7 +20,9 @@ private:
 
     llvm::Value* emit_sequence(pAst ast);
 
-    llvm::Value* emit_special_form(pAst ast);
+    llvm::Value* emit_sequence_special_form(pAst ast);
+
+    llvm::Value* emit_sequence_function_call(pAst ast);
 
     llvm::Value* emit_integer(pAst ast);
 
