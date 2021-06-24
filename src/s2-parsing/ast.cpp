@@ -26,7 +26,7 @@ AstExpression::~AstExpression() = default;
 
 AstSequence::AstSequence(std::vector<pAst>&& seq) :
     AstExpression(AstKind::sequence),
-    seq(std::move(seq))
+    seq(seq)
 {}
 
 pAst AstSequence::make(std::vector<pAst>&& seq) {

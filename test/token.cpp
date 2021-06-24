@@ -127,7 +127,7 @@ TEST_CASE("TokenMatcher")
     auto matcher = TokenMatcher();
     std::stringstream input;
 
-    auto f = [](TokenMatcher * matcher, std::stringstream * i) {
+    auto f = [](TokenMatcher* matcher, std::stringstream* i) {
         auto tok = matcher->match(i->str());
     };
 

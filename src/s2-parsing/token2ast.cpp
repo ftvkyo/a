@@ -4,7 +4,7 @@
 Token2Ast::Token2Ast() = default;
 
 
-Token2Ast& Token2Ast::operator<<(pToken&& token) {
+Token2Ast& Token2Ast::operator<<(pToken token) {
     switch(token->get_kind()) {
         case TokenKind::bracket_left:
         case TokenKind::bracket_right:
@@ -13,7 +13,7 @@ Token2Ast& Token2Ast::operator<<(pToken&& token) {
         case TokenKind::special_form:
         case TokenKind::identifier:
         case TokenKind::integer:
-            stack.emplace_back(std::move(token));
+            stack.emplace_back(token);
             break;
     }
 
@@ -21,8 +21,8 @@ Token2Ast& Token2Ast::operator<<(pToken&& token) {
 }
 
 
-Token2Ast& Token2Ast::operator<<(pAst&& ast_node) {
-    stack.emplace_back(std::move(ast_node));
+Token2Ast& Token2Ast::operator<<(pAst ast_node) {
+    stack.emplace_back(ast_node);
     return *this;
 }
 
@@ -30,10 +30,10 @@ Token2Ast& Token2Ast::operator<<(pAst&& ast_node) {
 pAst Token2Ast::extract() {
     std::vector<pAst> nodes;
     nodes.reserve(stack.size());
-    for(auto&& token : stack) {
+    for(auto token : stack) {
         pAst ast_node;
         if(std::holds_alternative<pToken>(token)) {
-            pToken tok = std::move(std::get<pToken>(token));
+            pToken tok = std::get<pToken>(token);
             switch(tok->get_kind()) {
             case TokenKind::special_form:
                 ast_node = AstSpecialForm::make(tok->retrieve_symbol());
@@ -48,9 +48,9 @@ pAst Token2Ast::extract() {
                 throw CompilerError();
             }
         } else {
-            ast_node = std::move(std::get<pAst>(token));
+            ast_node = std::get<pAst>(token);
         }
-        nodes.emplace_back(std::move(ast_node));
+        nodes.emplace_back(ast_node);
     }
     stack.clear();
 

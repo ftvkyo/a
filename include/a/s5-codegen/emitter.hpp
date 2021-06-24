@@ -10,7 +10,7 @@ public:
 
     Emitter();
 
-    llvm::Value* emit(pAst &ast);
+    llvm::Value* emit(pAst ast);
 
 private:
 
@@ -19,5 +19,5 @@ private:
     llvm::LLVMContext context;
     llvm::IRBuilder<> builder;
     std::unique_ptr<llvm::Module> module;
-    std::map<std::string, llvm::Value *> named_values;
+    std::map<std::string, llvm::Value*> named_values;
 };

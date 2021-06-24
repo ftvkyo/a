@@ -112,7 +112,7 @@ TEST_CASE("Lexer pretty-print")
     }
 
     auto tokens = lexer.tokenize(&input);
-    for(auto& it : tokens) {
+    for(auto it : tokens) {
         it->inspect(&output);
         output << " ";
     }

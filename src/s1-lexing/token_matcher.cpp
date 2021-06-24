@@ -83,7 +83,7 @@ pToken TokenMatcher::match(std::string&& token) {
         if(res != std::nullopt) {
             // Early return to be sure that only one lambda actually
             // produces a value.
-            return std::move(*res);
+            return *res;
         }
     }
 

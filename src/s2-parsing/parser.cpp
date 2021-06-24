@@ -9,7 +9,7 @@ pAst Parser::parse(std::vector<pToken>&& tokens) {
 
     converters[0] << AstSpecialForm::make("@block");
 
-    for(auto& tok : tokens) {
+    for(auto tok : tokens) {
         switch(tok->get_kind()) {
         case TokenKind::bracket_left:
             depth++;
@@ -27,7 +27,7 @@ pAst Parser::parse(std::vector<pToken>&& tokens) {
         case TokenKind::special_form:
         case TokenKind::identifier:
         case TokenKind::integer:
-            converters[depth] << std::move(tok);
+            converters[depth] << tok;
         case TokenKind::eof:
             // Not an attempt to leave the cycle
             break;

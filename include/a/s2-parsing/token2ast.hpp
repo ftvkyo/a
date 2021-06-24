@@ -21,7 +21,7 @@ public:
      *
      * @returns itself.
      */
-    Token2Ast& operator<<(pToken&& token);
+    Token2Ast& operator<<(pToken token);
 
     /**
      * Add an AST node to the series.
@@ -30,7 +30,7 @@ public:
      *
      * @returns itself.
      */
-    Token2Ast& operator<<(pAst&& ast_node);
+    Token2Ast& operator<<(pAst ast_node);
 
     /**
      * Move the current series stored in `this` into the `reciever` as
