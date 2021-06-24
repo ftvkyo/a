@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "token.hpp"
+#include "token_matcher.hpp"
 
 
 /**
@@ -22,7 +22,7 @@ public:
      *
      * @returns Result of conversion.
      */
-    std::vector<pToken> tokenize(std::istream * input);
+    std::vector<pToken> tokenize(std::istream* input);
 
 private:
 
@@ -58,7 +58,7 @@ private:
      *
      * @returns The token that was extracted.
      */
-    pToken get_next_token(std::istream * input);
+    pToken get_next_token(std::istream* input);
 
     /**
      * List of characters that are tokens on their own even if they could

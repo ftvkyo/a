@@ -1,11 +1,5 @@
 #pragma once
 
-#include "a/lexer.hpp"
-#include "a/parser.hpp"
-#include "a/convert.hpp"
-#include "a/check.hpp"
-#include "a/emit.hpp"
-
 
 /**
  * If you see it, there's a bug in the compiler.

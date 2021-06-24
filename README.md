@@ -1,4 +1,4 @@
-# a
+# Language description
 An attempt to make an LLVM frontend for something.
 
 This something is a C-like language with Scheme-like syntax.
@@ -9,9 +9,9 @@ These implementation details are not very important as they probably
 do not affect the user. The internals might be LISPified or whatever
 in the future, the description above explains just the current state of things.
 
-[DESIGN.md](./DESIGN.md)
+[Extended info](./doc/DOC.md)
 
-# b
+# Compiling and testing
 
 ```console
  $ CC=clang CXX=clang++ meson builddir && cd builddir
@@ -19,7 +19,7 @@ in the future, the description above explains just the current state of things.
  $ test/testexe
 ```
 
-# c
+# Code examples
 
 ```
 code examples go here

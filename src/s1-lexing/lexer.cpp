@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "a.hpp"
+#include "a/prelude.hpp"
 
 
 Lexer::Lexer() {
@@ -8,7 +8,7 @@ Lexer::Lexer() {
 }
 
 
-std::vector<pToken> Lexer::tokenize(std::istream * const input) {
+std::vector<pToken> Lexer::tokenize(std::istream* const input) {
     std::vector<pToken> result;
     TokenKind tk;
 
@@ -16,8 +16,8 @@ std::vector<pToken> Lexer::tokenize(std::istream * const input) {
     // eof will also get put into the result vector
     do {
         pToken tok = get_next_token(input);
-        tk = tok->kind;
-        result.emplace_back(std::move(tok));
+        tk = tok->get_kind();
+        result.emplace_back(tok);
     } while(tk != TokenKind::eof);
 
     return result;
@@ -41,7 +41,7 @@ bool Lexer::is_long_token_pair(char left, char right) {
 }
 
 
-pToken Lexer::get_next_token(std::istream * const input) {
+pToken Lexer::get_next_token(std::istream* const input) {
     std::stringstream out;
     char current;
 

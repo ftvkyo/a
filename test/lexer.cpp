@@ -75,7 +75,7 @@ TEST_CASE("Lexer")
 
     CHECK_EQ(tokens.size(), expected.size());
     for(size_t i = 0; i < tokens.size(); i++) {
-        CHECK_EQ(tokens[i]->kind, expected[i]);
+        CHECK_EQ(tokens[i]->get_kind(), expected[i]);
     }
 }
 
@@ -112,7 +112,7 @@ TEST_CASE("Lexer pretty-print")
     }
 
     auto tokens = lexer.tokenize(&input);
-    for(auto& it : tokens) {
+    for(auto it : tokens) {
         it->inspect(&output);
         output << " ";
     }
