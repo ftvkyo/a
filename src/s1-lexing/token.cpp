@@ -12,11 +12,11 @@ TokenKind Token::get_kind() {
 }
 
 int Token::retrieve_int() {
-    throw CompilerError();
+    throw CompilerError("Tried to get a stored int from a wrong token.");
 }
 
 std::string Token::retrieve_symbol() {
-    throw CompilerError();
+    throw CompilerError("Tried to get a stored symbol from a wrong token.");
 }
 
 Token::~Token() = default;
@@ -113,4 +113,3 @@ void TokenIdentifier::inspect(std::ostream* out) {
 std::string TokenIdentifier::retrieve_symbol() {
     return val;
 }
-

@@ -9,7 +9,7 @@ Token2Ast& Token2Ast::operator<<(pToken token) {
         case TokenKind::bracket_left:
         case TokenKind::bracket_right:
         case TokenKind::eof:
-            throw CompilerError();
+            throw CompilerError("Token2Ast::operator<< got an unexpected token.");
         case TokenKind::special_form:
         case TokenKind::identifier:
         case TokenKind::integer:
@@ -45,7 +45,7 @@ pAst Token2Ast::extract() {
                 ast_node = AstInteger::make(tok->retrieve_int());
                 break;
             default:
-                throw CompilerError();
+                throw CompilerError("Token2Ast::extract met an unexpected token.");
             }
         } else {
             ast_node = std::get<pAst>(token);

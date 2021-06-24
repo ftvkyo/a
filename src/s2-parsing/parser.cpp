@@ -19,7 +19,7 @@ pAst Parser::parse(std::vector<pToken>&& tokens) {
             break;
         case TokenKind::bracket_right:
             if(depth == 0) {
-                throw SyntaxError();
+                throw SyntaxError("Met a right bracket on the top depth level.");
             }
             depth--;
             converters[depth + 1] >> converters[depth];
@@ -35,7 +35,7 @@ pAst Parser::parse(std::vector<pToken>&& tokens) {
     }
 
     if(depth != 0) {
-        throw SyntaxError();
+        throw SyntaxError("Brackets didn't match.");
     }
 
     return converters[0].extract();

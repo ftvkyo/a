@@ -20,7 +20,7 @@ llvm::Value* Emitter::emit(pAst ast) {
     case AstKind::sequence:
         return emit_sequence(ast);
     case AstKind::special_form:
-        throw CompilerError();
+        throw CompilerError("Special forms should be processed on the emit_sequence step.");
     case AstKind::integer:
         return emit_integer(ast);
     case AstKind::identifier:
@@ -30,7 +30,7 @@ llvm::Value* Emitter::emit(pAst ast) {
 
 llvm::Value* Emitter::emit_sequence(pAst ast) {
     if(ast->retrieve_seq_s() < 1) {
-        throw SyntaxError();
+        throw UnimplementedError("Empty sequences aren't supported yet.");
     }
 
     switch(ast->retrieve_seq_i(0)->get_kind()) {
@@ -40,24 +40,24 @@ llvm::Value* Emitter::emit_sequence(pAst ast) {
     case AstKind::special_form:
         return emit_sequence_special_form(ast);
     case AstKind::integer:
-        throw SyntaxError();
+        throw SyntaxError("Integer is not a function nor a special form.");
     }
 }
 
 llvm::Value* Emitter::emit_sequence_special_form(pAst ast) {
     (void) ast;
-    throw UnimplementedError();
+    throw UnimplementedError("Special forms are not supported yet.");
 }
 
 llvm::Value* Emitter::emit_sequence_function_call(pAst ast) {
     if(ast->retrieve_seq_i(0)->get_kind() == AstKind::sequence) {
-        throw UnimplementedError();
+        throw UnimplementedError("First class functions are not supported yet.");
     }
 
     std::string callee_name = ast->retrieve_seq_i(0)->retrieve_symbol();
     llvm::Function *callee_f = module->getFunction(callee_name);
     if(!callee_f) {
-        throw SyntaxError();
+        throw SyntaxError("Function does not exist.");
     }
 
     std::vector<llvm::Value *> args;
@@ -77,7 +77,7 @@ llvm::Value* Emitter::emit_integer(pAst ast) {
 llvm::Value* Emitter::emit_identifier(pAst ast) {
     llvm::Value* v = named_values[ast->retrieve_symbol()];
     if(!v) {
-        throw SyntaxError();
+        throw SyntaxError("Identifier does not exist.");
     }
     return v;
 }

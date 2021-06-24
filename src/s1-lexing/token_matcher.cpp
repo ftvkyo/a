@@ -75,7 +75,7 @@ pToken TokenMatcher::match(std::string&& token) {
     // filtered out, eof should not go here, so getting it would
     // mean there is a bug in the calling code.
     if(token.empty()) {
-        throw CompilerError();
+        throw CompilerError("Got an empty string in TokenMatcher::match");
     }
 
     for(auto it : token_matches) {
@@ -87,5 +87,5 @@ pToken TokenMatcher::match(std::string&& token) {
         }
     }
 
-    throw SyntaxError();
+    throw SyntaxError("No token has been matched in TokenMatcher::match");
 }

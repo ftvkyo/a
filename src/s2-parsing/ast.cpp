@@ -10,24 +10,24 @@ AstKind AstExpression::get_kind() {
 }
 
 std::vector<pAst> AstExpression::retrieve_seq() {
-    throw CompilerError();
+    throw CompilerError("Tried to get a sequence from a wrong ast node.");
 }
 
 size_t AstExpression::retrieve_seq_s() {
-    throw CompilerError();
+    throw CompilerError("Tried to get a sequence size from a wrong ast node.");
 }
 
 pAst AstExpression::retrieve_seq_i(size_t i) {
     (void) i;
-    throw CompilerError();
+    throw CompilerError("Tried to get a sequence element from a wrong ast node.");
 }
 
 int AstExpression::retrieve_int() {
-    throw CompilerError();
+    throw CompilerError("Tried to get an int from a wrong ast node.");
 }
 
 std::string AstExpression::retrieve_symbol() {
-    throw CompilerError();
+    throw CompilerError("Tried to get a symbol from a wrong ast node.");
 }
 
 AstExpression::~AstExpression() = default;
@@ -69,7 +69,7 @@ size_t AstSequence::retrieve_seq_s() {
 
 pAst AstSequence::retrieve_seq_i(size_t i) {
     if(i >= seq.size()) {
-        throw CompilerError();
+        throw CompilerError("Tried to access a non-existent sequence position.");
     }
     return seq[i];
 }

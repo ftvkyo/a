@@ -6,7 +6,13 @@
  * In other words, throw in situations that should not happen.
  */
 class CompilerError : public std::exception {
+public:
+    CompilerError(std::string what);
+
     const char* what() const throw ();
+
+private:
+    std::string reason;
 };
 
 
@@ -14,7 +20,13 @@ class CompilerError : public std::exception {
  * If you see this, some part of the compiler hasn't been implemented yet.
  */
 class UnimplementedError : public std::exception {
+public:
+    UnimplementedError(std::string what);
+
     const char* what() const throw ();
+
+private:
+    std::string reason;
 };
 
 
@@ -22,5 +34,11 @@ class UnimplementedError : public std::exception {
  * Errors caused by malformed input are represented by this.
  */
 class SyntaxError : public std::exception {
+public:
+    SyntaxError(std::string what);
+
     const char* what() const throw ();
+
+private:
+    std::string reason;
 };

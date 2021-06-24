@@ -9,6 +9,6 @@ TEST_CASE("Build system check")
 
     SUBCASE("using exported symbols")
     {
-        CHECK_THROWS(throw SyntaxError());
+        CHECK_THROWS(throw SyntaxError("test"));
     }
 }
