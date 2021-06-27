@@ -16,15 +16,21 @@ public:
 
 private:
 
+    void populate_builtins();
+
     llvm::Value* emit(pAst ast);
 
-    llvm::Value* emit_special_form(pAst ast);
+    llvm::Value* emit_sf(pAst ast);
 
-    llvm::Value* emit_function(pAst ast);
+    llvm::Value* emit_call(pAst ast);
 
     llvm::Value* emit_integer(pAst ast);
 
     llvm::Value* emit_identifier(pAst ast);
+
+    llvm::Value* make_main(llvm::Value* callee);
+
+    bool fed = false;
 
     llvm::LLVMContext context;
     llvm::IRBuilder<> builder;
