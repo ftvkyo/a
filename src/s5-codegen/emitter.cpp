@@ -29,8 +29,8 @@ llvm::Value* Emitter::emit(pAst ast) {
         return emit_integer(ast);
     case AstKind::identifier:
         return emit_identifier(ast);
-    case AstKind::keyword:
-        throw CompilerError("Emitter::emit got a keyword as input which shouldn't happen.");
+    default:
+        throw CompilerError("Emitter::emit got unexpected input.");
     }
 }
 
