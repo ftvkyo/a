@@ -53,7 +53,7 @@ TEST_CASE("Lexer")
             TokenKind::integer,
             TokenKind::bracket_right,
 
-            TokenKind::special_form,
+            TokenKind::keyword,
 
             TokenKind::bracket_left,
             TokenKind::identifier,
@@ -108,7 +108,7 @@ TEST_CASE("Lexer pretty-print")
     SUBCASE("a little of everything")
     {
         input << "@salad of-potat 256 42.0 (amogus)";
-        expected = "sf:@salad id:of-potat int:256 id:42.0 ( id:amogus ) eof ";
+        expected = "kw:@salad id:of-potat int:256 id:42.0 ( id:amogus ) eof ";
     }
 
     auto tokens = lexer.tokenize(&input);

@@ -37,7 +37,7 @@ TokenMatcher::TokenMatcher() {
                     return std::nullopt;
                 }
             }
-            return {TokenSpecialForm::make(std::move(s))};
+            return {TokenKeyword::make(std::move(s))};
         }
     );
 

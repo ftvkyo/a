@@ -18,20 +18,20 @@ TEST_CASE("Parser")
 
     SUBCASE("processing basic brackets")
     {
-        input << "()";
-        expected = "(@block ())";
+        input << "(a)";
+        expected = "(@block (a))";
     }
 
     SUBCASE("processing advanced brackets")
     {
-        input << "()(()) (()())";
-        expected = "(@block () (()) (() ()))";
+        input << "(a)(a(a)) (a(a)(a))";
+        expected = "(@block (a) (a (a)) (a (a) (a)))";
     }
 
     SUBCASE("processing brackets with some data and special forms inbetween")
     {
-        input << "(52) (@potat) (identifier?)";
-        expected = "(@block (52) (@potat) (identifier?))";
+        input << "(a 52) (@potat) (identifier?)";
+        expected = "(@block (a 52) (@potat) (identifier?))";
     }
 
     SUBCASE("processing newlines")
@@ -42,14 +42,14 @@ TEST_CASE("Parser")
 
     SUBCASE("just data")
     {
-        input << "abc () (15)";
-        expected = "(@block abc () (15))";
+        input << "abc (a) (a 15)";
+        expected = "(@block abc (a) (a 15))";
     }
 
     SUBCASE("whitespace")
     {
-        input << "abc    ()   \n ( 15      )";
-        expected = "(@block abc () (15))";
+        input << "abc    (a)   \n (   a 15      )";
+        expected = "(@block abc (a) (a 15))";
     }
 
     SUBCASE("a little of everything")

@@ -21,34 +21,20 @@ void Emitter::print() {
 
 llvm::Value* Emitter::emit(pAst ast) {
     switch(ast->get_kind()) {
-    case AstKind::sequence:
-        return emit_sequence(ast);
+    case AstKind::function:
+        return emit_function(ast);
     case AstKind::special_form:
-        throw CompilerError("Special forms should be processed on the emit_sequence step.");
+        return emit_special_form(ast);
     case AstKind::integer:
         return emit_integer(ast);
     case AstKind::identifier:
         return emit_identifier(ast);
+    case AstKind::keyword:
+        throw CompilerError("Emitter::emit got a keyword as input which shouldn't happen.");
     }
 }
 
-llvm::Value* Emitter::emit_sequence(pAst ast) {
-    if(ast->retrieve_seq_s() < 1) {
-        throw UnimplementedError("Empty sequences aren't supported yet.");
-    }
-
-    switch(ast->retrieve_seq_i(0)->get_kind()) {
-    case AstKind::sequence:
-    case AstKind::identifier:
-        return emit_sequence_function_call(ast);
-    case AstKind::special_form:
-        return emit_sequence_special_form(ast);
-    case AstKind::integer:
-        throw SyntaxError("Integer is not a function nor a special form.");
-    }
-}
-
-llvm::Value* Emitter::emit_sequence_special_form(pAst ast) {
+llvm::Value* Emitter::emit_special_form(pAst ast) {
     if(ast->retrieve_seq_i(0)->retrieve_symbol() == "@block") {
         std::vector<llvm::Type *> ints(1, llvm::Type::getInt64Ty(context));
         llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getInt64Ty(context), ints, false);
@@ -89,9 +75,9 @@ llvm::Value* Emitter::emit_sequence_special_form(pAst ast) {
     }
 }
 
-llvm::Value* Emitter::emit_sequence_function_call(pAst ast) {
-    if(ast->retrieve_seq_i(0)->get_kind() == AstKind::sequence) {
-        throw UnimplementedError("First class functions are not supported yet.");
+llvm::Value* Emitter::emit_function(pAst ast) {
+    if(ast->retrieve_seq_i(0)->get_kind() != AstKind::identifier) {
+        throw UnimplementedError("Anonymous functions are not supported yet.");
     }
 
     std::string callee_name = ast->retrieve_seq_i(0)->retrieve_symbol();

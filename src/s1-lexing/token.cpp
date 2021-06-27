@@ -61,20 +61,20 @@ void TokenBracketRight::inspect(std::ostream* out) {
 }
 
 
-TokenSpecialForm::TokenSpecialForm(std::string&& s) :
-    Token(TokenKind::special_form),
+TokenKeyword::TokenKeyword(std::string&& s) :
+    Token(TokenKind::keyword),
     val(s)
 {}
 
-pToken TokenSpecialForm::make(std::string&& s) {
-    return pToken(new TokenSpecialForm(std::move(s)));
+pToken TokenKeyword::make(std::string&& s) {
+    return pToken(new TokenKeyword(std::move(s)));
 }
 
-void TokenSpecialForm::inspect(std::ostream* out) {
-    *out << "sf:" << val;
+void TokenKeyword::inspect(std::ostream* out) {
+    *out << "kw:" << val;
 }
 
-std::string TokenSpecialForm::retrieve_symbol() {
+std::string TokenKeyword::retrieve_symbol() {
     return val;
 }
 

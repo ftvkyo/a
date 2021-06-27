@@ -7,7 +7,7 @@ pAst Parser::parse(std::vector<pToken>&& tokens) {
     std::vector<Token2Ast> converters(20);
     size_t depth = 0;
 
-    converters[0] << AstSpecialForm::make("@block");
+    converters[0] << AstKeyword::make("@block");
 
     for(auto tok : tokens) {
         switch(tok->get_kind()) {
@@ -24,7 +24,7 @@ pAst Parser::parse(std::vector<pToken>&& tokens) {
             depth--;
             converters[depth + 1] >> converters[depth];
             break;
-        case TokenKind::special_form:
+        case TokenKind::keyword:
         case TokenKind::identifier:
         case TokenKind::integer:
             converters[depth] << tok;

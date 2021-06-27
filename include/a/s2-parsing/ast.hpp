@@ -9,16 +9,12 @@
  */
 enum class AstKind {
     /**
-     * A sequence of other AST nodes.
-     * For example, "(a b)" is:
-     *  seq
-     *  / \
-     * a   b
+     * A node with children that is a function call.
      */
-    sequence,
+    function,
 
     /**
-     * A leaf node that is a name of a special form.
+     * A node with children that is a special form "call".
      */
     special_form,
 
@@ -26,6 +22,11 @@ enum class AstKind {
      * A leaf node that is an integer value.
      */
     integer,
+
+    /**
+     * A leaf node that is a name of a special form.
+     */
+    keyword,
 
     /**
      * A leaf node that is an identifier.
@@ -143,10 +144,8 @@ private:
 };
 
 
-class AstSequence : public AstExpression {
+class AstCall : public AstExpression {
 public:
-    static pAst make(std::vector<pAst>&& seq);
-
     virtual void inspect(std::ostream* output) override;
 
     virtual std::vector<pAst> retrieve_seq() override;
@@ -155,25 +154,30 @@ public:
 
     virtual pAst retrieve_seq_i(size_t i) override;
 
+    virtual ~AstCall() = 0;
+
 protected:
-    AstSequence(std::vector<pAst>&& seq);
+    AstCall(AstKind t, std::vector<pAst>&& seq);
 
     std::vector<pAst> seq;
 };
 
 
-class AstSpecialForm : public AstExpression {
+class AstFunction : public AstCall {
 public:
-    static pAst make(std::string&& val);
-
-    virtual void inspect(std::ostream* output) override;
-
-    virtual std::string retrieve_symbol() override;
+    static pAst make(std::vector<pAst>&& seq);
 
 protected:
-    AstSpecialForm(std::string&& val);
+    AstFunction(std::vector<pAst>&& seq);
+};
 
-    std::string val;
+
+class AstSpecialForm : public AstCall {
+public:
+    static pAst make(std::vector<pAst>&& seq);
+
+protected:
+    AstSpecialForm(std::vector<pAst>&& seq);
 };
 
 
@@ -189,6 +193,21 @@ protected:
     AstInteger(int val);
 
     int val;
+};
+
+
+class AstKeyword : public AstExpression {
+public:
+    static pAst make(std::string&& val);
+
+    virtual void inspect(std::ostream* output) override;
+
+    virtual std::string retrieve_symbol() override;
+
+protected:
+    AstKeyword(std::string&& val);
+
+    std::string val;
 };
 
 
