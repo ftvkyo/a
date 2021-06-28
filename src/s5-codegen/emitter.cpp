@@ -6,8 +6,7 @@
 
 
 Emitter::Emitter() :
-    builder(context),
-    module(new llvm::Module("a", context))
+    context("a")
 {}
 
 void Emitter::feed(pAst ast) {
@@ -22,14 +21,14 @@ void Emitter::feed(pAst ast) {
 }
 
 void Emitter::print() {
-    module->print(llvm::outs(), nullptr);
+    context.m->print(llvm::outs(), nullptr);
 }
 
 void Emitter::populate_builtins() {
-    std::vector<llvm::Type *> binary_func_args(2, llvm::Type::getInt64Ty(context));
-    llvm::FunctionType *binary_func_type = llvm::FunctionType::get(llvm::Type::getInt64Ty(context), binary_func_args, false);
+    std::vector<llvm::Type *> binary_func_args(2, llvm::Type::getInt64Ty(context.c));
+    llvm::FunctionType *binary_func_type = llvm::FunctionType::get(llvm::Type::getInt64Ty(context.c), binary_func_args, false);
 
-    llvm::Function *f_add = llvm::Function::Create(binary_func_type, llvm::Function::ExternalLinkage, "f_add", module.get());
+    llvm::Function *f_add = llvm::Function::Create(binary_func_type, llvm::Function::ExternalLinkage, "f_add", context.m.get());
 
     auto f_add_arg_it = f_add->arg_begin();
     llvm::Value* arg0 = f_add_arg_it++;
@@ -37,12 +36,12 @@ void Emitter::populate_builtins() {
     llvm::Value* arg1 = f_add_arg_it++;
     arg1->setName("arg1");
 
-    llvm::BasicBlock *bb_add = llvm::BasicBlock::Create(context, "entry", f_add);
-    builder.SetInsertPoint(bb_add);
+    llvm::BasicBlock *bb_add = llvm::BasicBlock::Create(context.c, "entry", f_add);
+    context.b.SetInsertPoint(bb_add);
 
-    llvm::Value* add = builder.CreateAdd(arg0, arg1);
+    llvm::Value* add = context.b.CreateAdd(arg0, arg1);
 
-    builder.CreateRet(add);
+    context.b.CreateRet(add);
 }
 
 llvm::Value* Emitter::emit(pAst ast) {
@@ -63,16 +62,16 @@ llvm::Value* Emitter::emit(pAst ast) {
 llvm::Value* Emitter::emit_sf(pAst ast) {
     if(ast->retrieve_seq_i(0)->retrieve_symbol() == "@block") {
         std::vector<llvm::Type *> ints(0);
-        llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getInt64Ty(context), ints, false);
-        llvm::Function *f = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "__anon_expr", module.get());
+        llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getInt64Ty(context.c), ints, false);
+        llvm::Function *f = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "__anon_expr", context.m.get());
 
-        llvm::BasicBlock *bb = llvm::BasicBlock::Create(context, "entry", f);
-        builder.SetInsertPoint(bb);
+        llvm::BasicBlock *bb = llvm::BasicBlock::Create(context.c, "entry", f);
+        context.b.SetInsertPoint(bb);
 
         auto last_expr = ast->retrieve_seq_i(ast->retrieve_seq_s() - 1);
         if (llvm::Value* retval = emit(last_expr)) {
             // Finish off the function.
-            builder.CreateRet(retval);
+            context.b.CreateRet(retval);
 
             // Validate the generated code, checking for consistency.
             llvm::verifyFunction(*f);
@@ -98,7 +97,7 @@ llvm::Value* Emitter::emit_call(pAst ast) {
         callee_name = "f_add";
     }
 
-    llvm::Function *callee_f = module->getFunction(callee_name);
+    llvm::Function *callee_f = context.m->getFunction(callee_name);
     if(!callee_f) {
         throw SyntaxError("Function does not exist.");
     }
@@ -111,15 +110,15 @@ llvm::Value* Emitter::emit_call(pAst ast) {
         }
     }
 
-    return builder.CreateCall(callee_f, args, "calltmp");
+    return context.b.CreateCall(callee_f, args, "calltmp");
 }
 
 llvm::Value* Emitter::emit_integer(pAst ast) {
-    return llvm::ConstantInt::get(context, llvm::APInt(64, ast->retrieve_int(), true));
+    return llvm::ConstantInt::get(context.c, llvm::APInt(64, ast->retrieve_int(), true));
 }
 
 llvm::Value* Emitter::emit_identifier(pAst ast) {
-    llvm::Value* v = named_values[ast->retrieve_symbol()];
+    llvm::Value* v = context.nv[ast->retrieve_symbol()];
     if(!v) {
         throw SyntaxError("Identifier does not exist.");
     }
@@ -128,22 +127,22 @@ llvm::Value* Emitter::emit_identifier(pAst ast) {
 
 llvm::Value* Emitter::make_main(llvm::Value* callee) {
     std::vector<llvm::Type *> args;
-    llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getInt64Ty(context), args, false);
-    llvm::Function *f = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "main", module.get());
+    llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getInt64Ty(context.c), args, false);
+    llvm::Function *f = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "main", context.m.get());
 
-    llvm::BasicBlock *bb = llvm::BasicBlock::Create(context, "entry", f);
-    builder.SetInsertPoint(bb);
+    llvm::BasicBlock *bb = llvm::BasicBlock::Create(context.c, "entry", f);
+    context.b.SetInsertPoint(bb);
 
     // Record the function arguments in the NamedValues map.
-    named_values.clear();
+    context.nv.clear();
 
-    std::vector<llvm::Type *> callee_args(1, llvm::Type::getInt64Ty(context));
-    llvm::FunctionType *callee_type = llvm::FunctionType::get(llvm::Type::getInt64Ty(context), args, false);
+    std::vector<llvm::Type *> callee_args(1, llvm::Type::getInt64Ty(context.c));
+    llvm::FunctionType *callee_type = llvm::FunctionType::get(llvm::Type::getInt64Ty(context.c), args, false);
     llvm::FunctionCallee c(callee_type, callee);
-    llvm::Value* call = builder.CreateCall(c);
+    llvm::Value* call = context.b.CreateCall(c);
 
     // Finish off the function.
-    builder.CreateRet(call);
+    context.b.CreateRet(call);
 
     // Validate the generated code, checking for consistency.
     llvm::verifyFunction(*f);
