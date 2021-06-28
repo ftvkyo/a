@@ -7,7 +7,7 @@
 int main() {
     Lexer lexer;
     Parser parser;
-    Converter converter;
+    Transformer transformer;
     Checker checker;
     Emitter emitter;
 
@@ -23,7 +23,7 @@ int main() {
     checker.check(ast);
 
     std::clog << "👉 converting..." << std::endl;
-    converter.convert(ast);
+    transformer.transform(ast);
     ast->inspect(&std::clog);
     std::clog << std::endl;
 

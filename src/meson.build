@@ -9,7 +9,7 @@ a_sources = [
 
     's3-verification/checker.cpp',
 
-    's4-conversion/converter.cpp',
+    's4-transformation/transformer.cpp',
 
     's5-codegen/emitter.cpp',
 
