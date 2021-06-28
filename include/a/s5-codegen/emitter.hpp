@@ -3,6 +3,7 @@
 #include <llvm/IR/IRBuilder.h>
 
 #include "a/s2-parsing/ast.hpp"
+#include "context.hpp"
 
 
 class Emitter {
@@ -10,14 +11,27 @@ public:
 
     Emitter();
 
-    llvm::Value* emit(pAst ast);
+    void feed(pAst ast);
+
+    void print();
 
 private:
 
-    llvm::Value* log_error(std::string err);
+    void populate_builtins();
 
-    llvm::LLVMContext context;
-    llvm::IRBuilder<> builder;
-    std::unique_ptr<llvm::Module> module;
-    std::map<std::string, llvm::Value*> named_values;
+    llvm::Value* emit(pAst ast);
+
+    llvm::Value* emit_sf(pAst ast);
+
+    llvm::Value* emit_call(pAst ast);
+
+    llvm::Value* emit_integer(pAst ast);
+
+    llvm::Value* emit_identifier(pAst ast);
+
+    llvm::Value* make_main(llvm::Value* callee);
+
+    bool fed = false;
+
+    Context context;
 };

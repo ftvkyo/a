@@ -10,7 +10,7 @@
 
 #include "a/s3-verification/checker.hpp"
 
-#include "a/s4-conversion/converter.hpp"
+#include "a/s4-transformation/transformer.hpp"
 
 #include "a/s5-codegen/emitter.hpp"
 

@@ -9,8 +9,8 @@ Token2Ast& Token2Ast::operator<<(pToken token) {
         case TokenKind::bracket_left:
         case TokenKind::bracket_right:
         case TokenKind::eof:
-            throw CompilerError();
-        case TokenKind::special_form:
+            throw CompilerError("Token2Ast::operator<< got an unexpected token.");
+        case TokenKind::keyword:
         case TokenKind::identifier:
         case TokenKind::integer:
             stack.emplace_back(token);
@@ -35,8 +35,8 @@ pAst Token2Ast::extract() {
         if(std::holds_alternative<pToken>(token)) {
             pToken tok = std::get<pToken>(token);
             switch(tok->get_kind()) {
-            case TokenKind::special_form:
-                ast_node = AstSpecialForm::make(tok->retrieve_symbol());
+            case TokenKind::keyword:
+                ast_node = AstKeyword::make(tok->retrieve_symbol());
                 break;
             case TokenKind::identifier:
                 ast_node = AstIdentifier::make(tok->retrieve_symbol());
@@ -45,7 +45,7 @@ pAst Token2Ast::extract() {
                 ast_node = AstInteger::make(tok->retrieve_int());
                 break;
             default:
-                throw CompilerError();
+                throw CompilerError("Token2Ast::extract met an unexpected token.");
             }
         } else {
             ast_node = std::get<pAst>(token);
@@ -54,10 +54,28 @@ pAst Token2Ast::extract() {
     }
     stack.clear();
 
-    return AstSequence::make(std::move(nodes));
+
+    if(nodes.size() == 0) {
+        throw UnimplementedError("Empty lists are not suported yet.");
+    }
+
+    auto k =  nodes[0]->get_kind();
+    switch(k) {
+    case AstKind::identifier:
+        return AstFunction::make(std::move(nodes));
+    case AstKind::keyword:
+        return AstSpecialForm::make(std::move(nodes));
+    default:
+        throw UnimplementedError("Lists are not supported yet.");
+    }
 }
 
 
 void Token2Ast::operator>>(Token2Ast& receiver) {
     receiver << this->extract();
+}
+
+
+size_t Token2Ast::size() {
+    return stack.size();
 }

@@ -10,30 +10,35 @@ AstKind AstExpression::get_kind() {
 }
 
 std::vector<pAst> AstExpression::retrieve_seq() {
-    throw CompilerError();
+    throw CompilerError("Tried to get a sequence from a wrong ast node.");
+}
+
+size_t AstExpression::retrieve_seq_s() {
+    throw CompilerError("Tried to get a sequence size from a wrong ast node.");
+}
+
+pAst AstExpression::retrieve_seq_i(size_t i) {
+    (void) i;
+    throw CompilerError("Tried to get a sequence element from a wrong ast node.");
 }
 
 int AstExpression::retrieve_int() {
-    throw CompilerError();
+    throw CompilerError("Tried to get an int from a wrong ast node.");
 }
 
 std::string AstExpression::retrieve_symbol() {
-    throw CompilerError();
+    throw CompilerError("Tried to get a symbol from a wrong ast node.");
 }
 
 AstExpression::~AstExpression() = default;
 
 
-AstSequence::AstSequence(std::vector<pAst>&& seq) :
-    AstExpression(AstKind::sequence),
+AstCall::AstCall(AstKind t, std::vector<pAst>&& seq) :
+    AstExpression(t),
     seq(seq)
 {}
 
-pAst AstSequence::make(std::vector<pAst>&& seq) {
-    return pAst(new AstSequence(std::move(seq)));
-}
-
-void AstSequence::inspect(std::ostream* out) {
+void AstCall::inspect(std::ostream* out) {
     *out << "(";
 
     if(seq.size() > 0) {
@@ -50,26 +55,39 @@ void AstSequence::inspect(std::ostream* out) {
     *out << ")";
 }
 
-std::vector<pAst> AstSequence::retrieve_seq() {
+std::vector<pAst> AstCall::retrieve_seq() {
     return seq;
 }
 
+size_t AstCall::retrieve_seq_s() {
+    return seq.size();
+}
 
-AstSpecialForm::AstSpecialForm(std::string&& val) :
-    AstExpression(AstKind::special_form),
-    val(val)
+pAst AstCall::retrieve_seq_i(size_t i) {
+    if(i >= seq.size()) {
+        throw CompilerError("Tried to access a non-existent sequence position.");
+    }
+    return seq[i];
+}
+
+AstCall::~AstCall() = default;
+
+
+AstFunction::AstFunction(std::vector<pAst>&& seq) :
+    AstCall(AstKind::function, std::move(seq))
 {}
 
-pAst AstSpecialForm::make(std::string&& val) {
-    return pAst(new AstSpecialForm(std::move(val)));
+pAst AstFunction::make(std::vector<pAst>&& seq) {
+    return pAst(new AstFunction(std::move(seq)));
 }
 
-void AstSpecialForm::inspect(std::ostream* out) {
-    *out << val;
-}
 
-std::string AstSpecialForm::retrieve_symbol() {
-    return val;
+AstSpecialForm::AstSpecialForm(std::vector<pAst>&& seq) :
+    AstCall(AstKind::special_form, std::move(seq))
+{}
+
+pAst AstSpecialForm::make(std::vector<pAst>&& seq) {
+    return pAst(new AstSpecialForm(std::move(seq)));
 }
 
 
@@ -87,6 +105,24 @@ void AstInteger::inspect(std::ostream* out) {
 }
 
 int AstInteger::retrieve_int() {
+    return val;
+}
+
+
+AstKeyword::AstKeyword(std::string&& val) :
+    AstExpression(AstKind::keyword),
+    val(val)
+{}
+
+pAst AstKeyword::make(std::string&& val) {
+    return pAst(new AstKeyword(std::move(val)));
+}
+
+void AstKeyword::inspect(std::ostream* out) {
+    *out << val;
+}
+
+std::string AstKeyword::retrieve_symbol() {
     return val;
 }
 

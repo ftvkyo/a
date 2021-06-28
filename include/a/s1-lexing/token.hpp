@@ -22,8 +22,8 @@ enum class TokenKind {
     /// ")"
     bracket_right,
 
-    /// A sequence of characters statring with @
-    special_form,
+    /// A sequence of characters statring with '@' a.k.a. special form.
+    keyword,
 
     /// A sequence of characters in range from '0' to '9' of any length.
     integer,
@@ -139,7 +139,7 @@ private:
 };
 
 
-struct TokenSpecialForm : public Token {
+struct TokenKeyword : public Token {
 public:
     static pToken make(std::string&& s);
 
@@ -148,7 +148,7 @@ public:
     virtual std::string retrieve_symbol() override;
 
 private:
-    TokenSpecialForm(std::string&& s);
+    TokenKeyword(std::string&& s);
     std::string val;
 };
 

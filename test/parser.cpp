@@ -3,8 +3,6 @@
 
 TEST_CASE("Parser")
 {
-    // TODO: test that should throw
-
     auto lexer = Lexer();
     auto parser = Parser();
 
@@ -18,20 +16,20 @@ TEST_CASE("Parser")
 
     SUBCASE("processing basic brackets")
     {
-        input << "()";
-        expected = "(@block ())";
+        input << "(a)";
+        expected = "(@block (a))";
     }
 
     SUBCASE("processing advanced brackets")
     {
-        input << "()(()) (()())";
-        expected = "(@block () (()) (() ()))";
+        input << "(a)(a(a)) (a(a)(a))";
+        expected = "(@block (a) (a (a)) (a (a) (a)))";
     }
 
     SUBCASE("processing brackets with some data and special forms inbetween")
     {
-        input << "(52) (@potat) (identifier?)";
-        expected = "(@block (52) (@potat) (identifier?))";
+        input << "(a 52) (@potat) (identifier?)";
+        expected = "(@block (a 52) (@potat) (identifier?))";
     }
 
     SUBCASE("processing newlines")
@@ -42,20 +40,20 @@ TEST_CASE("Parser")
 
     SUBCASE("just data")
     {
-        input << "abc () (15)";
-        expected = "(@block abc () (15))";
+        input << "abc (a) (a 15)";
+        expected = "(@block abc (a) (a 15))";
     }
 
     SUBCASE("whitespace")
     {
-        input << "abc    ()   \n ( 15      )";
-        expected = "(@block abc () (15))";
+        input << "abc    (a)   \n (   a 15      )";
+        expected = "(@block abc (a) (a 15))";
     }
 
     SUBCASE("a little of everything")
     {
-        input << "@salad of-potat 256 42.0 (amogus)";
-        expected = "(@block @salad of-potat 256 42.0 (amogus))";
+        input << "(@salad) of-potat 256 42.0 (amogus)";
+        expected = "(@block (@salad) of-potat 256 42.0 (amogus))";
     }
 
     auto tokens = lexer.tokenize(&input);
@@ -65,4 +63,54 @@ TEST_CASE("Parser")
     node->inspect(&output);
 
     CHECK_EQ(output.str(), expected);
+}
+
+
+TEST_CASE("Parser throws when")
+{
+    auto lexer = Lexer();
+    auto parser = Parser();
+
+    std::stringstream input;
+
+    SUBCASE("empty list")
+    {
+        // Lists are not supported
+        input << "()";
+    }
+
+    SUBCASE("list vith values")
+    {
+        // Only function calls or special forms are supported
+        input << "(1 2)";
+    }
+
+    SUBCASE("keyword in the middle")
+    {
+        // Keywords can only be at the start of special forms
+        input << "(abc @kw 12)";
+    }
+
+    SUBCASE("wrong brackets 1")
+    {
+        input << ")";
+    }
+
+    SUBCASE("wrong brackets 2")
+    {
+        input << "(";
+    }
+
+    SUBCASE("wrong brackets 3")
+    {
+        input << ")(";
+    }
+
+    SUBCASE("wrong brackets 4")
+    {
+        input << "(((() () ()) () ())) () )";
+    }
+
+    auto tokens = lexer.tokenize(&input);
+    CHECK_THROWS(parser.parse(std::move(tokens)));
 }

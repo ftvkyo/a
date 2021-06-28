@@ -27,12 +27,12 @@ TEST_CASE("Token creation and inspection")
         expected = "()";
     }
 
-    SUBCASE("TokenSpecialForm")
+    SUBCASE("TokenKeyword")
     {
-        auto tok = TokenSpecialForm::make("@potato");
-        CHECK_EQ(tok->get_kind(), TokenKind::special_form);
+        auto tok = TokenKeyword::make("@potato");
+        CHECK_EQ(tok->get_kind(), TokenKind::keyword);
         tok->inspect(&ss);
-        expected = "sf:@potato";
+        expected = "kw:@potato";
     }
 
     SUBCASE("TokenInteger")
@@ -80,9 +80,9 @@ TEST_CASE("Token getters")
 
     SUBCASE("throw when data is of a different type")
     {
-        SUBCASE("TokenSpecialForm")
+        SUBCASE("TokenKeyword")
         {
-            auto tok = TokenSpecialForm::make("@potato");
+            auto tok = TokenKeyword::make("@potato");
             CHECK_THROWS_AS(tok->retrieve_int(), CompilerError);
         }
 
@@ -101,9 +101,9 @@ TEST_CASE("Token getters")
 
     SUBCASE("work when data is of the correct type")
     {
-        SUBCASE("TokenSpecialForm")
+        SUBCASE("TokenKeyword")
         {
-            auto tok = TokenSpecialForm::make("@potato");
+            auto tok = TokenKeyword::make("@potato");
             CHECK_EQ(tok->retrieve_symbol(), "@potato");
         }
 
@@ -145,10 +145,10 @@ TEST_CASE("TokenMatcher")
         CHECK_EQ(tok_r->get_kind(), TokenKind::bracket_right);
     }
 
-    SUBCASE("special form")
+    SUBCASE("keyword")
     {
         auto tok = matcher.match("@i-am-special");
-        CHECK_EQ(tok->get_kind(), TokenKind::special_form);
+        CHECK_EQ(tok->get_kind(), TokenKind::keyword);
         CHECK_EQ(tok->retrieve_symbol(), "@i-am-special");
     }
 
