@@ -3,8 +3,6 @@
 
 TEST_CASE("Parser")
 {
-    // TODO: test that should throw
-
     auto lexer = Lexer();
     auto parser = Parser();
 
@@ -54,8 +52,8 @@ TEST_CASE("Parser")
 
     SUBCASE("a little of everything")
     {
-        input << "@salad of-potat 256 42.0 (amogus)";
-        expected = "(@block @salad of-potat 256 42.0 (amogus))";
+        input << "(@salad) of-potat 256 42.0 (amogus)";
+        expected = "(@block (@salad) of-potat 256 42.0 (amogus))";
     }
 
     auto tokens = lexer.tokenize(&input);
@@ -65,4 +63,54 @@ TEST_CASE("Parser")
     node->inspect(&output);
 
     CHECK_EQ(output.str(), expected);
+}
+
+
+TEST_CASE("Parser throws when")
+{
+    auto lexer = Lexer();
+    auto parser = Parser();
+
+    std::stringstream input;
+
+    SUBCASE("empty list")
+    {
+        // Lists are not supported
+        input << "()";
+    }
+
+    SUBCASE("list vith values")
+    {
+        // Only function calls or special forms are supported
+        input << "(1 2)";
+    }
+
+    SUBCASE("keyword in the middle")
+    {
+        // Keywords can only be at the start of special forms
+        input << "(abc @kw 12)";
+    }
+
+    SUBCASE("wrong brackets 1")
+    {
+        input << ")";
+    }
+
+    SUBCASE("wrong brackets 2")
+    {
+        input << "(";
+    }
+
+    SUBCASE("wrong brackets 3")
+    {
+        input << ")(";
+    }
+
+    SUBCASE("wrong brackets 4")
+    {
+        input << "(((() () ()) () ())) () )";
+    }
+
+    auto tokens = lexer.tokenize(&input);
+    CHECK_THROWS(parser.parse(std::move(tokens)));
 }

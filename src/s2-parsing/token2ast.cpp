@@ -74,3 +74,8 @@ pAst Token2Ast::extract() {
 void Token2Ast::operator>>(Token2Ast& receiver) {
     receiver << this->extract();
 }
+
+
+size_t Token2Ast::size() {
+    return stack.size();
+}

@@ -25,6 +25,9 @@ pAst Parser::parse(std::vector<pToken>&& tokens) {
             converters[depth + 1] >> converters[depth];
             break;
         case TokenKind::keyword:
+            if(converters[depth].size() != 0) {
+                throw SyntaxError("Met a keyword in the middle of something.");
+            }
         case TokenKind::identifier:
         case TokenKind::integer:
             converters[depth] << tok;

@@ -49,6 +49,13 @@ public:
      */
     pAst extract();
 
+    /**
+     * Get the size of the internal stack.
+     *
+     * @returns stack.size()
+     */
+    size_t size();
+
 private:
 
     std::vector<std::variant<pToken, pAst>> stack;
